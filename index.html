@@ -8,19 +8,19 @@
     <meta name="description" content="Darkipedia is an anonymous paste platform for sharing code snippets, text files, and notes safely and quickly. No logins or registrations required.">
     <meta name="keywords" content="pastebin, anonymous, paste platform, code sharing, text snippets, dark mode, privacy, temp notes, paste, share code">
     <meta name="author" content="Darkipedia Team">
-    <link rel="canonical" href="https://darkipedia.example.com/"> <!-- Replace example.com with your domain -->
+    <link rel="canonical" href="https://darkipedia.vercel.app/">
     <!-- Open Graph / Facebook -->
     <meta property="og:type" content="website">
     <meta property="og:title" content="Darkipedia - Anonymous Paste Platform">
     <meta property="og:description" content="Share text or code anonymously. No sign up. Minimalist and private.">
     <meta property="og:url" content="https://darkipedia.example.com/">
     <meta property="og:site_name" content="Darkipedia">
-    <meta property="og:image" content="https://darkipedia.example.com/assets/og-image.png"> <!-- Replace with actual OG image url -->
+    <meta property="og:image" content="https://darkipedia.example.com/assets/og-image.png">
     <!-- Twitter Card -->
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:title" content="Darkipedia - Anonymous Paste Platform">
     <meta name="twitter:description" content="Share text, notes, or code securely and anonymously with Darkipedia.">
-    <meta name="twitter:image" content="https://darkipedia.example.com/assets/og-image.png"> <!-- Replace with actual OG image url -->
+    <meta name="twitter:image" content="https://darkipedia.example.com/assets/og-image.png">
     <!-- Font for code-y feel, no glow -->
     <link href="https://fonts.googleapis.com/css?family=Fira+Mono:400,700&display=swap" rel="stylesheet">
     <style>
@@ -40,7 +40,9 @@
             --text-muted: #858585;
             --brand-green: #50fa7b;
             --brand-dot: #4ff669;
-            --shadow: 0 0 10px #101313e8;
+            --shadow: 0 0 25px #101313e8;
+            --main-max-width: 1200px;
+            --table-font-size: 1.18em;
         }
 
         html, body {
@@ -49,6 +51,7 @@
             font-family: 'Fira Mono', 'Consolas', monospace;
             min-height: 100vh;
             margin: 0;
+            font-size: 20px;
         }
 
         body {
@@ -59,26 +62,26 @@
         }
 
         .container {
-            margin: 3.2rem 0 2rem;
+            margin: 3.5rem 0 2.5rem;
             background: var(--gray-darker);
             box-shadow: var(--shadow);
-            max-width: 900px;
-            min-width: 320px;
-            border-radius: 8px;
-            border: 1px solid var(--gray-border);
+            max-width: var(--main-max-width);
+            min-width: 340px;
+            border-radius: 15px;
+            border: 2px solid var(--gray-border);
             overflow: hidden;
-            width: 100%;
+            width: 97vw;
         }
 
         header {
             display: flex;
             align-items: center;
-            padding: 1.35rem 2.1rem 1.15rem 2rem;
+            padding: 1.8rem 2.7rem 1.4rem 2.5rem;
             background: var(--gray-dark);
-            border-bottom: 1.5px solid var(--gray-border);
+            border-bottom: 2px solid var(--gray-border);
             box-shadow: none;
             justify-content: space-between;
-            gap: 1.1em;
+            gap: 2em;
             position: relative;
             z-index: 2;
         }
@@ -86,14 +89,14 @@
         .branding {
             display: flex;
             align-items: center;
-            gap: 1.11em;
+            gap: 1.5em;
         }
 
         header h1 {
             color: var(--text-head);
             text-transform: lowercase;
             letter-spacing: 0.13em;
-            font-size: 2.1rem;
+            font-size: 2.8rem;
             margin: 0;
             font-weight: 900;
             user-select: none;
@@ -101,26 +104,26 @@
         }
 
         .brand-dot {
-            height: 1.1em;
-            width: 1.1em;
-            margin-right: -0.23em;
+            height: 1.7em;
+            width: 1.7em;
+            margin-right: -0.2em;
             border-radius: 50%;
             background: var(--brand-dot);
-            border: 1.5px solid var(--gray-border);
+            border: 2px solid var(--gray-border);
             display: inline-block;
         }
 
         .header-link {
             color: var(--green-link);
             background: var(--gray-accent);
-            border: 1.1px solid var(--gray-border);
-            border-radius: 4px;
-            padding: 0.55em 1.12em;
-            font-weight: 600;
-            font-size: 1rem;
+            border: 2px solid var(--gray-border);
+            border-radius: 6px;
+            padding: 0.78em 2em;
+            font-weight: 700;
+            font-size: 1.12rem;
             margin-left: 1em;
             text-decoration: none;
-            letter-spacing: 0.04em;
+            letter-spacing: 0.06em;
             outline: none;
             transition: 
                 background 0.13s,
@@ -137,27 +140,29 @@
         }
 
         main {
-            padding: 2.3em 2.2em 1.4em 2.2em;
+            padding: 3em 2.8em 2.2em 2.7em;
             background: transparent;
             min-height: 60vh;
         }
 
         .action-bar {
-            margin-bottom: 2em;
+            margin-bottom: 2.5em;
             display: flex;
             align-items: center;
-            justify-content: flex-end;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 2em;
         }
 
         .new-paste-btn {
             background: var(--gray-dark);
             color: var(--green-link);
-            border: 1.3px solid var(--gray-border);
+            border: 2px solid var(--gray-border);
             font-family: inherit;
-            font-size: 1em;
-            padding: 0.64em 1.8em;
-            border-radius: 7px;
-            font-weight: 700;
+            font-size: 1.18em;
+            padding: 0.7em 2.5em;
+            border-radius: 10px;
+            font-weight: 800;
             cursor: pointer;
             outline: none;
             transition: 
@@ -176,31 +181,99 @@
             border-color: #3ff088;
         }
 
+        .search-bar-wrap {
+            display: flex;
+            align-items: center;
+            background: var(--gray-accent);
+            border-radius: 8px;
+            padding: 0.3em 1.1em;
+            border: 1.5px solid var(--gray-border);
+            box-shadow: none;
+            flex: 1 1 360px;
+            max-width: 470px;
+        }
+        #search-input {
+            background: transparent;
+            border: none;
+            color: var(--text-main);
+            font-family: inherit;
+            outline: none;
+            font-size: 1.13em;
+            flex: 1;
+            padding: 0.6em 0.5em 0.6em 0.25em;
+            min-width: 0;
+        }
+        #search-input::placeholder {
+            color: #6ad089;
+            letter-spacing: 0.04em;
+            opacity: 0.7;
+        }
+        #search-clear-btn {
+            background: none;
+            border: none;
+            color: #93ffbe;
+            font-size: 1em;
+            margin-left: 0.2em;
+            cursor: pointer;
+            padding: 0 0.4em;
+            display: none;
+            user-select: none;
+        }
+        #search-clear-btn.active {
+            display: inline;
+        }
+
+        .options-bar {
+            display: flex;
+            gap: 1.1em;
+            align-items: center;
+            margin-bottom: 1.2em;
+            flex-wrap: wrap;
+        }
+        .filter-select, .sort-select {
+            background: var(--gray-table-row);
+            color: var(--green-link);
+            font-family: inherit;
+            padding: 0.42em 1.32em;
+            border-radius: 6px;
+            font-size: 1em;
+            font-weight: 700;
+            border: 1.5px solid var(--gray-border);
+            outline: none;
+        }
+        .sort-select {
+            color: var(--text-main);
+        }
+        .filter-select:focus, .sort-select:focus {
+            border-color: #31ec87;
+        }
+
         #pastes-section {
             margin-top: 0.1em;
         }
 
         #pastes-table-wrap {
             background: var(--gray-darker);
-            border-radius: 7px;
-            border: 1px solid var(--gray-border);
+            border-radius: 11px;
+            border: 2px solid var(--gray-border);
             overflow-x: auto;
             box-shadow: none;
-            padding: 0.18em 0.35em 0.25em 0.35em;
+            padding: 0.33em 0.7em 0.43em 0.7em;
         }
 
         #pastes-table {
             width: 100%;
             border-collapse: separate;
-            border-spacing: 0 0.45em;
+            border-spacing: 0 0.6em;
             margin: 0;
             color: var(--text-main);
-            font-size: 1.02em;
+            font-size: var(--table-font-size);
             background: none;
+            min-width: 760px;
         }
 
         #pastes-table th, #pastes-table td {
-            padding: 0.72em 1.02em;
+            padding: 0.9em 2em;
             text-align: left;
             font-family: inherit;
             vertical-align: middle;
@@ -211,19 +284,20 @@
         #pastes-table th {
             color: var(--text-head);
             background: var(--gray-table-head);
-            font-size: 1.01em;
-            letter-spacing: 0.07em;
-            font-weight: 800;
+            font-size: 1.1em;
+            letter-spacing: 0.08em;
+            font-weight: 900;
             text-shadow: none;
-            border-radius: 7px 7px 0 0;
-            border-bottom: 1.5px solid var(--gray-border);
+            border-radius: 9px 9px 0 0;
+            border-bottom: 2px solid var(--gray-border);
             user-select: none;
         }
 
         #pastes-table td {
-            border-radius: 5px 5px 8px 8px;
+            border-radius: 7px 7px 10px 10px;
             box-shadow: none;
             background: var(--gray-table-row);
+            font-size: 1.01em;
         }
 
         #pastes-table tr {
@@ -240,91 +314,155 @@
         .paste-title-link {
             color: var(--green-link);
             text-decoration: none;
-            font-weight: 800;
+            font-weight: 900;
             text-shadow: none;
             transition: color 0.13s;
             letter-spacing: 0.01em;
             word-break: break-word;
-            font-size: 1.04em;
+            font-size: 1.13em;
             filter: none;
         }
         .paste-title-link:hover {
             color: #fff;
             text-shadow: none;
             filter: none;
+            text-decoration: underline;
         }
         .paste-category {
             color: var(--text-muted);
-            font-size: 0.99em;
+            font-size: 1.04em;
             font-family: inherit;
             letter-spacing: 0.01em;
             font-weight: 700;
             background: var(--gray-accent);
-            padding: 0.23em 0.75em;
-            border-radius: 9px;
+            padding: 0.31em 1.08em;
+            border-radius: 12px;
             display: inline-block;
             box-shadow: none;
             text-align: center;
         }
         .paste-date {
             color: var(--text-muted);
-            font-size: 0.98em;
+            font-size: 1.01em;
             font-family: inherit;
             letter-spacing: 0.01em;
             font-weight: 600;
             white-space: nowrap;
             background: var(--gray-dark);
-            padding: 0.23em 0.78em;
-            border-radius: 7px;
+            padding: 0.3em 1em;
+            border-radius: 8px;
             text-align: center;
             display: inline-block;
+        }
+        .paste-length {
+            color: #59ffb6;
+            background: #172018;
+            border-radius: 8px;
+            font-size: 0.97em;
+            padding: 0.31em 0.98em;
+            font-weight: 800;
+            display: inline-block;
+            margin-right: 1em;
+        }
+        .paste-actions-btns {
+            display: flex;
+            gap: 0.62em;
+        }
+        .paste-copy-btn,
+        .paste-delete-btn {
+            cursor: pointer;
+            padding: 0.35em 1.1em;
+            border-radius: 6px;
+            border: none;
+            font-weight: 700;
+            font-size: 1em;
+            font-family: inherit;
+            margin: 0 0.14em;
+            transition: background 0.11s, color 0.13s;
+        }
+        .paste-copy-btn {
+            background: #193526;
+            color: #66ffa7;
+        }
+        .paste-copy-btn:hover {
+            background: #21a85b;
+            color: white;
+        }
+        .paste-delete-btn {
+            background: #211717;
+            color: #fff277;
+        }
+        .paste-delete-btn:hover {
+            background: #ab2929;
+            color: white;
         }
         #no-pastes-message {
             display: block;
             color: #b15e5e;
             text-shadow: none;
             text-align: center;
-            font-size: 1.15em;
-            margin: 2.8em 0 0 0;
+            font-size: 1.26em;
+            margin: 2.4em 0 0 0;
             font-family: inherit;
             background: #18191b;
-            padding: 1.2em 0 1em 0;
-            border-radius: 10px;
-            font-weight: 700;
+            padding: 1.4em 0 1.2em 0;
+            border-radius: 13px;
+            font-weight: 800;
         }
 
-        /* Remove glow borders, make subtle */
         .neon-border {
-            border: 1.5px solid var(--gray-border);
+            border: 2px solid var(--gray-border);
             box-shadow: none;
-            border-radius: 11px;
+            border-radius: 13px;
         }
 
-        @media (max-width: 1020px) {
+        @media (max-width: 1460px) {
+            main {
+                padding-left: 1.1em;
+                padding-right: 1.1em;
+            }
             .container {
-                margin: 2em 0 1.2em 0;
+                margin-left: 0.5em;
+                margin-right: 0.5em;
                 max-width: 99vw;
                 min-width: 0;
             }
-            main {
-                padding: 1.1em 0.38em 1.1em 0.38em;
-            }
-            header {
-                padding: 1.1rem 0.5rem 0.9rem 1.02rem;
-            }
         }
-        @media (max-width: 610px) {
-            main {
-                padding: 0.47em 0.04em 0.92em 0.07em;
+        @media (max-width: 900px) {
+            #pastes-table {
+                min-width: 0;
+                font-size: 0.97em;
             }
             .container {
                 border-radius: 0;
             }
             header h1 {
-                font-size: 1.1rem;
+                font-size: 1.5rem;
             }
-            header { flex-direction: column; align-items: start; }
-            .branding { gap: 0.47em; }
+            header { flex-direction: column; align-items: flex-start; gap: 0.7em; }
+            .branding { gap: 0.7em; }
+        }
+        @media (max-width: 600px) {
+            main {
+                padding: 0.4em 0.05em 1em 0.06em;
+            }
+            .container {
+                border-radius: 0;
+            }
+            .options-bar {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 0.6em;
+            }
+            .action-bar {
+                flex-direction: column;
+                align-items: stretch;
+                gap: 1em;
+            }
+            #pastes-table th, #pastes-table td {
+                padding-left: 0.3em;
+                padding-right: 0.3em;
+            }
         }
     </style>
 </head>
@@ -339,16 +477,39 @@
         </header>
         <main>
             <div class="action-bar">
+                <div class="search-bar-wrap">
+                    <input id="search-input" type="text" placeholder="Search title, content, or category..." autocomplete="off" spellcheck="false" />
+                    <button id="search-clear-btn" title="Clear search">✖</button>
+                </div>
                 <a href="pages/paste.html" class="new-paste-btn">✚ New Paste</a>
+            </div>
+            <div class="options-bar">
+                <label><span style="font-size:0.99em; color:#5fffa6; font-weight:800;">Category:</span>
+                    <select id="filter-category" class="filter-select">
+                        <option value="all">All</option>
+                    </select>
+                </label>
+                <label><span style="font-size:0.99em; color:#c0f395; font-weight:800;">Sort by:</span>
+                    <select id="sort-option" class="sort-select">
+                        <option value="date-desc">Newest</option>
+                        <option value="date-asc">Oldest</option>
+                        <option value="title-az">Title A-Z</option>
+                        <option value="title-za">Title Z-A</option>
+                        <option value="length-desc">Longest</option>
+                        <option value="length-asc">Shortest</option>
+                    </select>
+                </label>
             </div>
             <section id="pastes-section">
                 <div id="pastes-table-wrap">
                     <table id="pastes-table">
                         <thead>
                             <tr>
-                                <th style="width: 41%;">Title</th>
-                                <th style="width: 18%;">Category</th>
-                                <th style="width: 25%;">Date</th>
+                                <th style="width: 36%;">Title</th>
+                                <th style="width:14%;">Category</th>
+                                <th style="width: 12%;">Date</th>
+                                <th style="width: 13%;">Size</th>
+                                <th style="width: 14%;">Actions</th>
                             </tr>
                         </thead>
                         <tbody id="pastes-tbody">
@@ -374,14 +535,19 @@
         }
     </style>
     <script>
-        // No neon, just minimalist, but still fancy table display
         const pastesTbody = document.getElementById('pastes-tbody');
         const noPastesMsg = document.getElementById('no-pastes-message');
+        const searchInput = document.getElementById('search-input');
+        const searchClearBtn = document.getElementById('search-clear-btn');
+        const filterCategory = document.getElementById('filter-category');
+        const sortOption = document.getElementById('sort-option');
+
+        let allPastes = [];
+        let filteredPastes = [];
 
         function formatPasteDate(iso) {
             if (!iso) return "";
             const d = new Date(iso);
-            // Human-friendly: Today, Yesterday, or Date
             const today = new Date();
             const pad = n => n.toString().padStart(2, '0');
             const isToday =
@@ -396,7 +562,7 @@
                 d.getFullYear() === yest.getFullYear();
 
             let dateStr = `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
-            let timeStr = `${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}`;
+            let timeStr = `${pad(d.getHours())}:${pad(d.getMinutes())}`;
 
             if (isToday)
                 return `Today, ${timeStr}`;
@@ -414,6 +580,155 @@
             }, 850);
         }
 
+        // --- Additional UI Logic for filtering/sorting/search ---
+
+        function getUniqueCategories(pastes) {
+            const categories = new Set();
+            for (const paste of pastes) {
+                if (paste.category && paste.category.trim())
+                    categories.add(paste.category.trim());
+            }
+            return Array.from(categories).sort((a, b) => a.localeCompare(b));
+        }
+
+        function renderCategoryFilter() {
+            const cats = getUniqueCategories(allPastes);
+            filterCategory.innerHTML = '<option value="all">All</option>' +
+                cats.map(cat => `<option value="${cat}">${cat}</option>`).join('');
+        }
+
+        function applyFiltersAndSort() {
+            let q = (searchInput.value || '').trim().toLowerCase();
+            let filterCat = filterCategory.value;
+            let sortVal = sortOption.value;
+
+            filteredPastes = allPastes
+                .filter(p => {
+                    let matchSearch = true;
+                    if (q.length > 0) {
+                        const inTitle = (p.title || '').toLowerCase().includes(q);
+                        const inCategory = (p.category || '').toLowerCase().includes(q);
+                        const inContent = (p.content || '').toLowerCase().includes(q);
+                        matchSearch = inTitle || inCategory || inContent;
+                    }
+                    let matchCat = filterCat === 'all' || (!filterCat) || ((p.category || '') === filterCat);
+                    return matchSearch && matchCat;
+                });
+
+            switch (sortVal) {
+                case 'date-desc':
+                    filteredPastes.sort((a, b) => (b.date||'').localeCompare(a.date||''));
+                    break;
+                case 'date-asc':
+                    filteredPastes.sort((a, b) => (a.date||'').localeCompare(b.date||''));
+                    break;
+                case 'title-az':
+                    filteredPastes.sort((a, b) => (a.title||'').localeCompare(b.title||''));
+                    break;
+                case 'title-za':
+                    filteredPastes.sort((a, b) => (b.title||'').localeCompare(a.title||''));
+                    break;
+                case 'length-desc':
+                    filteredPastes.sort((a, b) => ((b.content||'').length - (a.content||'').length));
+                    break;
+                case 'length-asc':
+                    filteredPastes.sort((a, b) => ((a.content||'').length - (b.content||'').length));
+                    break;
+            }
+            renderPastesTable();
+        }
+
+        function renderPastesTable() {
+            pastesTbody.innerHTML = '';
+            if (filteredPastes.length === 0) {
+                noPastesMsg.style.display = 'block';
+                return;
+            } else {
+                noPastesMsg.style.display = 'none';
+            }
+            filteredPastes.forEach((paste, i) => {
+                const tr = document.createElement('tr');
+
+                // Title with link
+                const titleTd = document.createElement('td');
+                const a = document.createElement('a');
+                a.href = `pages/view.html?id=${encodeURIComponent(paste.id)}`;
+                a.className = 'paste-title-link';
+                a.textContent = paste.title && paste.title.trim() ? paste.title : `Untitled`;
+                titleTd.appendChild(a);
+                tr.appendChild(titleTd);
+
+                // Category
+                const catTd = document.createElement('td');
+                catTd.className = 'paste-category';
+                catTd.textContent = paste.category?.trim() || 'Uncategorized';
+                tr.appendChild(catTd);
+
+                // Date
+                const dateTd = document.createElement('td');
+                dateTd.className = 'paste-date';
+                if (paste.date)
+                    dateTd.textContent = formatPasteDate(paste.date);
+                else
+                    dateTd.textContent = '';
+                tr.appendChild(dateTd);
+
+                // Length/size
+                const lenTd = document.createElement('td');
+                const len = (paste.content || '').length;
+                lenTd.innerHTML = `<span class="paste-length">${len} chars</span>`;
+                tr.appendChild(lenTd);
+
+                // Actions: Copy / Delete
+                const actionsTd = document.createElement('td');
+                actionsTd.className = 'paste-actions-btns';
+
+                const copyBtn = document.createElement('button');
+                copyBtn.className = 'paste-copy-btn';
+                copyBtn.textContent = 'Copy Link';
+                copyBtn.title = 'Copy paste link to clipboard';
+                copyBtn.onclick = e => {
+                    e.preventDefault();
+                    const url = `${location.origin}/pages/view.html?id=${encodeURIComponent(paste.id)}`;
+                    navigator.clipboard.writeText(url).then(() => {
+                        copyBtn.textContent = 'Copied!';
+                        setTimeout(() => { copyBtn.textContent = 'Copy Link'; }, 1000);
+                    });
+                };
+                actionsTd.appendChild(copyBtn);
+
+                const deleteBtn = document.createElement('button');
+                deleteBtn.className = 'paste-delete-btn';
+                deleteBtn.textContent = 'Delete';
+                deleteBtn.title = 'Delete this paste';
+                deleteBtn.onclick = e => {
+                    e.preventDefault();
+                    if (confirm('Delete this paste forever?')) {
+                        // Remove from allPastes, update storage, and refresh UI
+                        allPastes = allPastes.filter(p => p.id !== paste.id);
+                        savePastes();
+                        updateUI();
+                    }
+                };
+                actionsTd.appendChild(deleteBtn);
+
+                tr.appendChild(actionsTd);
+
+                // Animation: blink if just added in last 7 seconds
+                let pasteTime = Date.parse(paste.date);
+                if (Date.now() - pasteTime < 7000) {
+                    setTimeout(() => blinkRow(tr), i * 125 + 500);
+                }
+                pastesTbody.appendChild(tr);
+            });
+        }
+
+        function savePastes() {
+            try {
+                localStorage.setItem('pastes', JSON.stringify(allPastes));
+            } catch (e) {}
+        }
+
         function loadPastes() {
             let pastes = [];
             try {
@@ -421,55 +736,59 @@
             } catch(e) {
                 pastes = [];
             }
-
-            // Show newest first
-            pastes = Array.isArray(pastes) ? pastes.slice().sort(
-                (a, b) => (b.date || 0).localeCompare(a.date || 0)) : [];
-
-            pastesTbody.innerHTML = '';
-
-            if(pastes.length === 0) {
-                noPastesMsg.style.display = 'block';
-            } else {
-                noPastesMsg.style.display = 'none';
-                pastes.forEach((paste, i) => {
-                    const tr = document.createElement('tr');
-
-                    // Title/link
-                    const titleTd = document.createElement('td');
-                    const a = document.createElement('a');
-                    a.href = `pages/view.html?id=${encodeURIComponent(paste.id)}`;
-                    a.className = 'paste-title-link';
-                    a.textContent = paste.title && paste.title.trim() ? paste.title : `Untitled`;
-                    titleTd.appendChild(a);
-                    tr.appendChild(titleTd);
-
-                    // Category
-                    const catTd = document.createElement('td');
-                    catTd.className = 'paste-category';
-                    catTd.textContent = paste.category?.trim() || 'Uncategorized';
-                    tr.appendChild(catTd);
-
-                    // Date
-                    const dateTd = document.createElement('td');
-                    dateTd.className = 'paste-date';
-                    if (paste.date)
-                        dateTd.textContent = formatPasteDate(paste.date);
-                    else
-                        dateTd.textContent = '';
-                    tr.appendChild(dateTd);
-
-                    // Animation: blink if just added in last 7 seconds
-                    let pasteTime = Date.parse(paste.date);
-                    if (Date.now() - pasteTime < 7000) {
-                        setTimeout(() => blinkRow(tr), i * 120 + 550);
-                    }
-
-                    pastesTbody.appendChild(tr);
-                });
-            }
+            allPastes = Array.isArray(pastes) ? pastes.slice() : [];
         }
+
+        function updateUI() {
+            renderCategoryFilter();
+            applyFiltersAndSort();
+        }
+
+        // Search bar clear button logic
+        searchInput.addEventListener('input', () => {
+            searchClearBtn.classList.toggle('active', searchInput.value.length > 0);
+            applyFiltersAndSort();
+        });
+        searchClearBtn.addEventListener('click', e => {
+            searchInput.value = '';
+            searchClearBtn.classList.remove('active');
+            applyFiltersAndSort();
+            searchInput.focus();
+        });
+        filterCategory.addEventListener('change', applyFiltersAndSort);
+        sortOption.addEventListener('change', applyFiltersAndSort);
+
+        // Keyboard: ESC clears search
+        searchInput.addEventListener('keydown', e => {
+            if (e.key === 'Escape') {
+                searchInput.value = '';
+                searchClearBtn.classList.remove('active');
+                applyFiltersAndSort();
+            }
+        });
+
+        // Paste Deleted via button, handled in deleteBtn onclick above
+
+        // Initial Load
         loadPastes();
+        updateUI();
+
+        // React to storage changes from other tabs
+        window.addEventListener('storage', (e) => {
+            if (e.key === 'pastes') {
+                loadPastes();
+                updateUI();
+            }
+        });
+
+        // Support keyboard shortcut "/": Focus search
+        document.addEventListener('keydown', function(e){
+            if (e.key === '/' && document.activeElement !== searchInput) {
+                e.preventDefault();
+                searchInput.focus();
+            }
+        });
+
     </script>
 </body>
 </html>
