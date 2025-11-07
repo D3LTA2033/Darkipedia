@@ -5,65 +5,193 @@
     <title>Create New Paste - Darkipedia</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="../css/style.css">
+    <meta name="description" content="Create and share anonymous text, stories, leaks, or images instantly on Darkipedia. No signup, no footprint.">
+    <link rel="icon" href="../assets/favicon.png">
+    <style>
+        .desc {
+            color: var(--text-muted, #8fe8e6);
+            font-size: 1.08em;
+            margin-top: .6em;
+            margin-bottom: 1.3em;
+        }
+        .char-count {
+            color: var(--brand-green, #56fa7f);
+            font-size: 0.93em;
+            float: right;
+            margin-top: -1.6em;
+            margin-bottom: 0.86em;
+        }
+        .image-preview-list {
+            display: flex;
+            gap: 0.7em;
+            flex-wrap: wrap;
+            margin-top: 0.55em;
+        }
+        .image-thumb {
+            position: relative;
+            display: inline-block;
+        }
+        .image-thumb img {
+            max-width: 74px;
+            max-height: 74px;
+            border-radius: 5px;
+            border: 1.5px solid var(--gray-border, #252529);
+            box-shadow: 0 0 6px #252a2e3f;
+        }
+        .remove-image-btn {
+            position: absolute;
+            top: -7px; right: -7px;
+            background: #ff3135;
+            color: #fff;
+            border: none;
+            border-radius: 50%;
+            width: 21px; height: 21px;
+            font-size: 1.03em;
+            cursor: pointer;
+            padding: 0;
+            line-height: 20px;
+        }
+        .form-tip {
+            margin: 0.25em 0 0.35em 0;
+            font-size: 0.97em;
+            color: var(--text-muted, #858585);
+        }
+    </style>
 </head>
 <body>
     <div class="container">
         <header>
-            <h1>Create a New Paste</h1>
-            <a href="../index.html" class="to-home-btn">← Back to Home</a>
-            <p>Share your thoughts, stories, leaks, <span style="color:#53f5ff">images</span>, or anything anonymously.</p>
+            <h1>
+                <svg width="1.8em" height="1.8em" viewBox="0 0 24 24" fill="none" style="vertical-align:middle;margin-right:.19em;"><circle cx="12" cy="12" r="10" stroke="#4ff669" stroke-width="2"/><path d="M7 12.5l3 3 5-7" stroke="#4ff669" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                New Paste
+            </h1>
+            <a href="../index.html" class="to-home-btn" title="Go home">← Home</a>
         </header>
         <main>
+            <div class="desc" aria-label="About this page">Share code, thoughts, stories, <span style="color:#53f5ff">images</span>, or leaks anonymously, securely and simply.</div>
             <div class="paste-form-box">
-                <form id="paste-form" class="form" autocomplete="off">
+                <form id="paste-form" class="form" autocomplete="off" aria-label="Paste Form" novalidate>
                     <div class="form-group">
-                        <label for="paste-title">Title</label>
+                        <label for="paste-title">Title <span class="form-tip">(optional, 100 chars max)</span></label>
                         <input
                             type="text"
                             id="paste-title"
                             name="title"
                             maxlength="100"
-                            placeholder="Enter a title (optional)"
+                            placeholder="e.g. whistle in the dark"
+                            aria-describedby="title-limit"
                         >
+                        <span class="char-count" id="title-limit">0/100</span>
                     </div>
                     <div class="form-group">
                         <label for="paste-content">Content <span style="color:#ff4ffe;">*</span></label>
                         <textarea
                             id="paste-content"
                             name="content"
-                            rows="12"
+                            rows="14"
+                            minlength="5"
                             required
-                            placeholder="Write your paste here..."
+                            maxlength="25000"
+                            placeholder="Write or paste your content here..."
+                            aria-describedby="content-limit"
                         ></textarea>
+                        <span class="char-count" id="content-limit">0/25000</span>
+                        <div class="form-tip">ProTip: Paste code, text, or URL—Auto-saves for 30 minutes in case you reload.</div>
                     </div>
                     <div class="form-group">
-                        <label for="paste-images">Attach Images (optional, up to 5, .jpg .jpeg .png .gif, max 2MB each)</label>
+                        <label for="paste-images">
+                            Attach Images
+                            <span class="form-tip">(jpg, png, gif &mdash; max 5, 2MB each)</span>
+                        </label>
                         <input
                             type="file"
                             id="paste-images"
                             name="images"
                             accept=".jpg,.jpeg,.png,.gif,image/jpeg,image/png,image/gif"
                             multiple
+                            aria-describedby="img-tip"
                         >
-                        <div class="image-preview-list" id="image-preview-list"></div>
+                        <div id="img-tip" class="form-tip">Hold Ctrl/Cmd to select multiple. <span style="color:#ffc400">No EXIF is kept.</span></div>
+                        <div class="image-preview-list" id="image-preview-list" aria-live="polite"></div>
                     </div>
                     <div class="form-group">
                         <label for="paste-category">Category <span style="color:#ff4ffe;">*</span></label>
-                        <select id="paste-category" name="category" required>
-                            <option value="">Select a category</option>
+                        <select id="paste-category" name="category" required aria-describedby="cat-tip">
+                            <option value="" disabled selected>Select a category</option>
                             <option value="Tech">Tech</option>
                             <option value="Leaks">Leaks</option>
                             <option value="Stories">Stories</option>
                             <option value="Knowledge">Knowledge</option>
                             <option value="Misc">Misc</option>
                         </select>
+                        <div id="cat-tip" class="form-tip">Please pick the most relevant tag.</div>
                     </div>
-                    <button type="submit" class="btn">Publish</button>
-                    <div class="form-error" style="display:none;"></div>
+                    <button type="submit" id="publish-btn" class="btn" aria-label="Publish Paste">🚀 Publish</button>
+                    <div class="form-error" style="display:none;" tabindex="-1" aria-live="assertive"></div>
+                    <div class="form-success" style="display:none;" tabindex="-1" aria-live="polite"></div>
                 </form>
+                <div class="form-tip" style="margin-top:1.15em;">
+                    <b>Privacy-First:</b> Pastes are unlisted by default, not indexed, and auto-expire in 60 days. <a href="../pages/faq.html" style="color:#46ff6e;">Learn more</a>
+                </div>
             </div>
         </main>
     </div>
+    <script>
+        // Character counter for title and content
+        function updateCounter(id, max) {
+            const input = document.getElementById(id);
+            const counter = document.getElementById(id + "-limit");
+            if (!input || !counter) return;
+            let val = input.value || "";
+            counter.textContent = val.length + "/" + max;
+            counter.style.color = (val.length > max ? "#ff4b5c" : "");
+        }
+        document.getElementById('paste-title').addEventListener('input', function() {
+            updateCounter('paste-title', 100);
+        });
+        document.getElementById('paste-content').addEventListener('input', function() {
+            updateCounter('paste-content', 25000);
+        });
+        // Init on load
+        updateCounter('paste-title', 100);
+        updateCounter('paste-content', 25000);
+
+        // Image preview with removal
+        document.getElementById('paste-images').addEventListener('change', function(e) {
+            const list = document.getElementById('image-preview-list');
+            list.innerHTML = '';
+            let files = Array.from(e.target.files).slice(0, 5); // enforce 5 files
+            files.forEach((file, idx) => {
+                if (!file.type.match(/^image\/(jpeg|png|gif)$/)) return;
+                if (file.size > 2 * 1024 * 1024) return;
+                const reader = new FileReader();
+                reader.onload = function(ev) {
+                    let thumb = document.createElement('div');
+                    thumb.className = 'image-thumb';
+                    thumb.innerHTML = `<img src="${ev.target.result}" alt="Upload Preview">
+                        <button type="button" title="Remove" class="remove-image-btn">&times;</button>`;
+                    thumb.querySelector('.remove-image-btn').onclick = function() {
+                        let dt = new DataTransfer();
+                        let input = document.getElementById('paste-images');
+                        let arr = Array.from(input.files);
+                        arr.splice(idx, 1);
+                        arr.forEach(f => dt.items.add(f));
+                        input.files = dt.files;
+                        input.dispatchEvent(new Event('change'));
+                    };
+                    list.appendChild(thumb);
+                };
+                reader.readAsDataURL(file);
+            });
+        });
+        // Accessibility: focus error on form error
+        document.getElementById('paste-form').addEventListener('submit', function(e) {
+            setTimeout(() => {
+                const err = document.querySelector('.form-error[style*="block"]');
+                if (err) err.focus();
+            }, 50);
+        });
+    </script>
     <script src="../js/paste.js"></script>
 </body>
 </html>
