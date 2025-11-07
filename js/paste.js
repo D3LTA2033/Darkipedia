@@ -5,93 +5,129 @@ document.addEventListener('DOMContentLoaded', () => {
     const titleInput = document.getElementById('paste-title');
     const contentInput = document.getElementById('paste-content');
     const categoryInput = document.getElementById('paste-category');
+    const errorBox = document.querySelector('.form-error');
+    const submitBtn = form.querySelector('button[type="submit"],input[type="submit"]');
 
-    // Utility: show a nice error message
+    // --- Utility Functions ---
+
     function showError(message) {
-        // If there's a .form-error element, use it; otherwise, fall back to alert
-        let errBox = document.querySelector('.form-error');
-        if (errBox) {
-            errBox.textContent = message;
-            errBox.style.display = 'block';
+        if (errorBox) {
+            errorBox.textContent = message;
+            errorBox.style.display = 'block';
         } else {
             alert(message);
         }
     }
 
-    // Utility: clear error message
     function clearError() {
-        let errBox = document.querySelector('.form-error');
-        if (errBox) errBox.style.display = 'none';
+        if (errorBox) errorBox.style.display = 'none';
     }
 
-    form.addEventListener('submit', function (e) {
-        e.preventDefault();
-        clearError();
+    function getFieldValue(input) {
+        return input ? input.value.trim() : '';
+    }
 
-        const title = titleInput ? titleInput.value.trim() : '';
-        const content = contentInput ? contentInput.value.trim() : '';
-        const category = categoryInput ? categoryInput.value : '';
+    function focusOn(input) {
+        if (input && typeof input.focus === 'function') input.focus();
+    }
 
-        // Validate required fields
-        if (!content) {
-            showError('Content cannot be empty.');
-            if (contentInput) contentInput.focus();
-            return;
-        }
-        if (!category) {
-            showError('Please select a category.');
-            if (categoryInput) categoryInput.focus();
-            return;
-        }
-
-        // Load pastes from localStorage
-        let pastes = [];
+    function getPastes() {
         try {
             const data = localStorage.getItem('pastes');
-            if (data) pastes = JSON.parse(data) || [];
-        } catch (e) {
-            pastes = [];
-        }
+            if (data) return JSON.parse(data) || [];
+        } catch (_) {}
+        return [];
+    }
 
-        // Generate a strong unique ID (time + random + 4-char checksum)
-        function makeId() {
+    function setPastes(arr) {
+        try {
+            localStorage.setItem('pastes', JSON.stringify(arr));
+        } catch (_) {
+            showError('Could not save paste. Storage error.');
+        }
+    }
+
+    // Generate a strong, collision-resistant unique ID.
+    function makeId() {
+        if (window.crypto && crypto.getRandomValues) {
+            // Use cryptographically strong random values
+            const array = new Uint8Array(8);
+            crypto.getRandomValues(array);
+            return (
+                Date.now().toString(36) +
+                Array.from(array).map(b => b.toString(36).padStart(2, '0')).join('') +
+                Math.random().toString(36).slice(2, 6)
+            );
+        } else {
+            // Fallback (not as strong)
             const now = Date.now().toString(36);
             const rnd = Math.random().toString(36).slice(2, 10);
-            const raw = now + rnd;
-            // simple 4-char checksum hash
-            let hash = 0;
+            let hash = 0, raw = now + rnd;
             for (let i = 0; i < raw.length; ++i) hash = ((hash << 5) - hash) + raw.charCodeAt(i);
             let chksum = Math.abs(hash).toString(36).slice(0, 4);
             return raw + chksum;
         }
+    }
 
-        // Create the paste object
+    // --- Form submission handler ---
+    form.addEventListener('submit', async function (e) {
+        e.preventDefault();
+        clearError();
+
+        const title = getFieldValue(titleInput);
+        const content = getFieldValue(contentInput);
+        const category = categoryInput ? categoryInput.value : '';
+
+        // Validate
+        if (!content) {
+            showError('Please enter some content.');
+            focusOn(contentInput);
+            return;
+        }
+        if (!category) {
+            showError('Please select a category.');
+            focusOn(categoryInput);
+            return;
+        }
+
+        // Prepare paste object
         const paste = {
             id: makeId(),
             title: title || 'Untitled',
-            content: content,
-            category: category,
+            content,
+            category,
             date: new Date().toISOString()
         };
 
-        // Save to localStorage (prevent accidental storing >100 pastes for performance)
+        // Save and slice for performance
+        let pastes = getPastes();
         pastes.unshift(paste);
         if (pastes.length > 100) pastes = pastes.slice(0, 100);
-        localStorage.setItem('pastes', JSON.stringify(pastes));
+        setPastes(pastes);
 
-        // Optionally: Reset form before redirect (for UX on slow connections)
+        // UX: Reset and disable submit during feedback
         form.reset();
-
-        // Optionally: Visual feedback before redirect
-        const submitBtn = form.querySelector('button[type="submit"],input[type="submit"]');
         if (submitBtn) {
             submitBtn.disabled = true;
             submitBtn.textContent = 'Saving...';
         }
 
-        // Fast redirect (700ms delay for feedback or 0ms if not needed)
+        // Fade out visual error or extra feedback if any
+        if (errorBox) {
+            errorBox.style.transition = "opacity 0.25s";
+            errorBox.style.opacity = "0";
+        }
+
+        // Small, reliable delay for feedback
         setTimeout(() => {
             window.location.href = '../index.html';
-        }, 150); // short delay for perceived feedback
+        }, 200);
+    });
+
+    // Optional: Dismiss error on input (smoother UX)
+    [titleInput, contentInput, categoryInput].forEach(input => {
+        if (input) {
+            input.addEventListener('input', clearError);
+        }
     });
 });
