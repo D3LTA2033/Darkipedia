@@ -8,7 +8,7 @@
     <meta name="description" content="Darkipedia is an anonymous paste platform for sharing code snippets, text files, and notes safely and quickly. No logins or registrations required.">
     <meta name="keywords" content="pastebin, anonymous, paste platform, code sharing, text snippets, dark mode, privacy, temp notes, paste, share code">
     <meta name="author" content="Darkipedia Team">
-    <link rel="canonical" href="https://darkipedia.vercel.app/">
+    <link rel="canonical" href="https://darkipedia.example.com/">
     <!-- Open Graph / Facebook -->
     <meta property="og:type" content="website">
     <meta property="og:title" content="Darkipedia - Anonymous Paste Platform">
@@ -21,37 +21,40 @@
     <meta name="twitter:title" content="Darkipedia - Anonymous Paste Platform">
     <meta name="twitter:description" content="Share text, notes, or code securely and anonymously with Darkipedia.">
     <meta name="twitter:image" content="https://darkipedia.example.com/assets/og-image.png">
-    <!-- Font for code-y feel, no glow -->
-    <link href="https://fonts.googleapis.com/css?family=Fira+Mono:400,700&display=swap" rel="stylesheet">
+    <!-- Google Fonts for code, add a pop header font -->
+    <link href="https://fonts.googleapis.com/css?family=Fira+Mono:400,700|Montserrat:900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
     <style>
         :root {
-            --gray-darkest: #111214;
-            --gray-darker: #18191b;
-            --gray-dark: #202124;
-            --gray-medium: #262626;
-            --gray-light: #343438;
-            --gray-border: #252529;
-            --gray-table-head: #1a1b1e;
-            --gray-table-row: #19191d;
-            --gray-accent: #323233;
-            --green-link: #46ff6e;
-            --text-main: #bbbbbb;
-            --text-head: #e0e0e0;
-            --text-muted: #858585;
-            --brand-green: #50fa7b;
-            --brand-dot: #4ff669;
-            --shadow: 0 0 25px #101313e8;
-            --main-max-width: 1200px;
-            --table-font-size: 1.18em;
+            --gray-darkest: #101017;
+            --gray-darker: #17181f;
+            --gray-dark: #211F25;
+            --gray-medium: #262928;
+            --gray-light: #383940;
+            --gray-border: #23232d;
+            --gray-table-head: #181b22;
+            --gray-table-row: #191b20;
+            --gray-accent: #252a33;
+            --green-link: #53ffbc;
+            --text-main: #dff6ee;
+            --text-head: #f7fff7;
+            --text-muted: #a3bfa1;
+            --brand-green: #57ffb1;
+            --brand-dot: #33ff99;
+            --shadow: 0 0 38px #09ecb550, 0 2px 28px #14162580;
+            --main-max-width: 1160px;
+            --table-font-size: 1.15em;
+            --neon: 0 0 11px #53ffbc, 0 0 4px #53ffbc80, 0 0 10px #53ffbc50;
         }
 
         html, body {
-            background: var(--gray-darkest);
+            background: linear-gradient(120deg, #0f0f17 0%, #141d24 100%);
             color: var(--text-main);
             font-family: 'Fira Mono', 'Consolas', monospace;
             min-height: 100vh;
             margin: 0;
-            font-size: 20px;
+            font-size: 19.5px;
+            scroll-behavior: smooth;
         }
 
         body {
@@ -62,135 +65,163 @@
         }
 
         .container {
-            margin: 3.5rem 0 2.5rem;
+            margin: 3.2rem 0 2rem;
             background: var(--gray-darker);
             box-shadow: var(--shadow);
             max-width: var(--main-max-width);
-            min-width: 340px;
-            border-radius: 15px;
-            border: 2px solid var(--gray-border);
+            min-width: 330px;
+            border-radius: 20px;
+            border: 2.4px solid var(--gray-border);
             overflow: hidden;
-            width: 97vw;
+            width: 95vw;
+            position:relative;
+            z-index: 2;
         }
 
         header {
             display: flex;
             align-items: center;
-            padding: 1.8rem 2.7rem 1.4rem 2.5rem;
-            background: var(--gray-dark);
+            padding: 2.1rem 2.8rem 1.45rem 2.7rem;
+            background: linear-gradient(90deg,#1f2129 60%, var(--gray-accent));
             border-bottom: 2px solid var(--gray-border);
-            box-shadow: none;
+            box-shadow: 0 0 30px #04ffb44d;
             justify-content: space-between;
             gap: 2em;
             position: relative;
-            z-index: 2;
+            z-index: 3;
         }
 
         .branding {
             display: flex;
             align-items: center;
-            gap: 1.5em;
+            gap: 1.1em;
         }
 
         header h1 {
             color: var(--text-head);
             text-transform: lowercase;
-            letter-spacing: 0.13em;
-            font-size: 2.8rem;
+            letter-spacing: 0.14em;
+            font-size: 2.95rem;
             margin: 0;
+            font-family: 'Montserrat', 'Fira Mono', monospace;
             font-weight: 900;
             user-select: none;
-            text-shadow: none;
+            text-shadow:
+                0 0 4px #00ffc830, 
+                0 0 10px #25ffb8,
+                0 0 1px #47ab7d;
+            filter: drop-shadow(0 0 6px #0affc4b0);
         }
 
         .brand-dot {
-            height: 1.7em;
-            width: 1.7em;
-            margin-right: -0.2em;
+            height: 2em;
+            width: 2em;
+            margin-right: -0.1em;
+            margin-left: 0.12em;
             border-radius: 50%;
             background: var(--brand-dot);
-            border: 2px solid var(--gray-border);
+            border: 2.3px solid #77ffc8;
             display: inline-block;
+            box-shadow: 0 0 16px #5fffca9c, 0 0 5px #5fffca40, 0 0 2px #01ff9f80;
+            animation: dot-pulse 1.8s cubic-bezier(0.4,0,1,1) infinite alternate;
+        }
+        @keyframes dot-pulse {
+            0% { box-shadow: 0 0 10px #90ffd4, 0 0 1px #40f7ae60; }
+            60% { box-shadow: 0 0 28px #32ffb7, 0 0 6px #7fffd42d; }
+            100% { box-shadow: 0 0 8px #31ac77, 0 0 2px #91f4c6c0;}
         }
 
         .header-link {
-            color: var(--green-link);
-            background: var(--gray-accent);
-            border: 2px solid var(--gray-border);
-            border-radius: 6px;
-            padding: 0.78em 2em;
+            color: var(--brand-green);
+            background: linear-gradient(90deg,#202c25 50%,#254038);
+            border: 2px solid #44ffbecc;
+            border-radius: 8px;
+            padding: 0.89em 2.2em;
             font-weight: 700;
-            font-size: 1.12rem;
-            margin-left: 1em;
+            font-size: 1.2rem;
+            margin-left: 1.1em;
             text-decoration: none;
-            letter-spacing: 0.06em;
-            outline: none;
+            letter-spacing: 0.09em;
             transition: 
                 background 0.13s,
                 color 0.16s,
-                border 0.18s;
+                border 0.18s,
+                box-shadow 0.25s;
             display: inline-block;
-            text-shadow: none;
+            text-shadow: 0 0 8px #9affcf21;
             position: relative;
+            box-shadow: 0 2px 20px #008b4436;
+            outline: none;
         }
         .header-link:hover, .header-link:focus {
-            background: #18191c;
+            background: #0c4127;
             color: #fff;
-            border-color: #2deb68;
+            border-color: #85fac6;
+            box-shadow: 0 1px 18px #43e9b337,0 0 24px #47ccc778;
+            text-shadow: 0 0 3px #30ffb9;
         }
 
         main {
-            padding: 3em 2.8em 2.2em 2.7em;
+            padding: 3em 2.9em 2.2em 2.9em;
             background: transparent;
-            min-height: 60vh;
+            min-height: 61vh;
+            animation: mainin 1.5s cubic-bezier(.19,.85,.77,.21) 1;
+        }
+        @keyframes mainin {
+            0% { opacity: 0; filter: blur(12px);}
+            100% { opacity: 1; filter: none;}
         }
 
         .action-bar {
-            margin-bottom: 2.5em;
+            margin-bottom: 2.9em;
             display: flex;
             align-items: center;
             justify-content: space-between;
             flex-wrap: wrap;
-            gap: 2em;
+            gap: 2.3em;
         }
 
         .new-paste-btn {
-            background: var(--gray-dark);
+            background: linear-gradient(90deg,rgba(73,255,183,0.038) 10%,rgba(0,0,0,0.14) 100%);
             color: var(--green-link);
-            border: 2px solid var(--gray-border);
+            border: 2.5px solid #53ffb077;
             font-family: inherit;
-            font-size: 1.18em;
-            padding: 0.7em 2.5em;
-            border-radius: 10px;
-            font-weight: 800;
+            font-size: 1.21em;
+            padding: 0.8em 2.9em;
+            border-radius: 13px;
+            font-weight: 900;
             cursor: pointer;
             outline: none;
             transition: 
-                box-shadow 0.16s, 
+                box-shadow 0.19s, 
                 border 0.15s,
-                color 0.12s,
-                background 0.12s;
-            letter-spacing: 0.045em;
+                color 0.13s,
+                background 0.14s,
+                filter 0.23s;
+            letter-spacing: 0.050em;
             text-decoration: none;
             position: relative;
             z-index: 2;
+            box-shadow: 0 0 10px #5afbc942, 0 2px 8px #457f6752;
+            filter: drop-shadow(0 0 10px #4affcf15);
         }
         .new-paste-btn:hover, .new-paste-btn:focus {
-            background: var(--gray-accent);
-            color: #fff;
-            border-color: #3ff088;
+            background: #182b22;
+            color: #59ffe9;
+            border-color: #3fffbc;
+            box-shadow: 0 0 32px #07ffe656, 0 1px 18px #4de17f47;
         }
 
         .search-bar-wrap {
             display: flex;
             align-items: center;
             background: var(--gray-accent);
-            border-radius: 8px;
-            padding: 0.3em 1.1em;
-            border: 1.5px solid var(--gray-border);
-            box-shadow: none;
+            border-radius: 11px;
+            padding: 0.29em 1.1em;
+            border: 2px solid var(--gray-border);
+            box-shadow: 0 0 12px #4effb410;
             flex: 1 1 360px;
-            max-width: 470px;
+            max-width: 500px;
         }
         #search-input {
             background: transparent;
@@ -198,13 +229,14 @@
             color: var(--text-main);
             font-family: inherit;
             outline: none;
-            font-size: 1.13em;
+            font-size: 1.12em;
             flex: 1;
-            padding: 0.6em 0.5em 0.6em 0.25em;
+            padding: 0.6em 0.5em 0.6em 0.23em;
             min-width: 0;
+            letter-spacing: 0.01em;
         }
         #search-input::placeholder {
-            color: #6ad089;
+            color: #5cf7be;
             letter-spacing: 0.04em;
             opacity: 0.7;
         }
@@ -212,68 +244,83 @@
             background: none;
             border: none;
             color: #93ffbe;
-            font-size: 1em;
-            margin-left: 0.2em;
+            font-size: 1.14em;
+            margin-left: 0.35em;
             cursor: pointer;
-            padding: 0 0.4em;
+            padding: 0 0.3em;
             display: none;
             user-select: none;
+            transition: color .14s;
         }
         #search-clear-btn.active {
             display: inline;
         }
+        #search-clear-btn:hover { color: #e96484; }
 
         .options-bar {
             display: flex;
-            gap: 1.1em;
+            gap: 1.2em;
             align-items: center;
-            margin-bottom: 1.2em;
+            margin-bottom: 1.25em;
             flex-wrap: wrap;
+            background: #151815;
+            border-radius: 8px;
+            padding: 0.6em 1em 0.55em 0.8em;
+            box-shadow: 0 0 11px #50ffbd0a;
+        }
+        .options-bar label {
+            font-family: inherit;
+            font-size:1em;
         }
         .filter-select, .sort-select {
             background: var(--gray-table-row);
             color: var(--green-link);
             font-family: inherit;
-            padding: 0.42em 1.32em;
-            border-radius: 6px;
+            padding: 0.46em 1.32em;
+            border-radius: 7px;
             font-size: 1em;
-            font-weight: 700;
-            border: 1.5px solid var(--gray-border);
+            font-weight: 800;
+            border: 1.7px solid var(--gray-border);
             outline: none;
+            margin-left: 0.55em;
+            box-shadow: 0 0 7px #34ffb51d;
+            transition: border 0.15s, box-shadow 0.16s;
         }
         .sort-select {
-            color: var(--text-main);
+            color: #e8ffe5;
+            font-weight: 800;
         }
         .filter-select:focus, .sort-select:focus {
-            border-color: #31ec87;
+            border-color: #26ff95;
+            box-shadow: 0 0 13px #19fff62a, 0 0 2px #52ffaa;
         }
 
         #pastes-section {
-            margin-top: 0.1em;
+            margin-top: 0.15em;
         }
 
         #pastes-table-wrap {
-            background: var(--gray-darker);
-            border-radius: 11px;
-            border: 2px solid var(--gray-border);
+            background: linear-gradient(90deg,#191c21 89%,#262b35), var(--gray-darker);
+            border-radius: 17px;
+            border: 2.3px solid #28c97862;
             overflow-x: auto;
-            box-shadow: none;
-            padding: 0.33em 0.7em 0.43em 0.7em;
+            box-shadow: 0 0 40px #1b715b12;
+            padding: 0.44em 0.7em 0.55em 0.92em;
         }
 
         #pastes-table {
             width: 100%;
             border-collapse: separate;
-            border-spacing: 0 0.6em;
+            border-spacing: 0 0.64em;
             margin: 0;
             color: var(--text-main);
             font-size: var(--table-font-size);
             background: none;
-            min-width: 760px;
+            min-width: 750px;
         }
 
         #pastes-table th, #pastes-table td {
-            padding: 0.9em 2em;
+            padding: 0.93em 1.65em;
             text-align: left;
             font-family: inherit;
             vertical-align: middle;
@@ -284,136 +331,152 @@
         #pastes-table th {
             color: var(--text-head);
             background: var(--gray-table-head);
-            font-size: 1.1em;
-            letter-spacing: 0.08em;
+            font-size: 1.16em;
+            letter-spacing: 0.09em;
             font-weight: 900;
-            text-shadow: none;
-            border-radius: 9px 9px 0 0;
+            text-shadow: 0 0 4px #27f7abb0, 0 0 1px #21db99;
+            border-radius: 11px 11px 0 0;
             border-bottom: 2px solid var(--gray-border);
             user-select: none;
+            filter: drop-shadow(0 0 5px #49ffc33d);
         }
 
         #pastes-table td {
-            border-radius: 7px 7px 10px 10px;
-            box-shadow: none;
-            background: var(--gray-table-row);
-            font-size: 1.01em;
+            border-radius: 7px 7px 12px 12px;
+            background: linear-gradient(90deg,#181b22 50%,#1d222e);
+            font-size: 1.03em;
+            box-shadow: 0 2px 6px #1e383e27;
+            position:relative;
+            z-index:2;
+            filter:none;
         }
-
         #pastes-table tr {
-            transition: background 0.15s;
+            transition: background 0.19s;
+        }
+        #pastes-table tr:hover td {
+            background: #292e32 !important;
+            color: #50ffd1;
+            filter: brightness(1.08) drop-shadow(0 0 4px #3fffbf64);
         }
         #pastes-table tr:last-child td {
             border-bottom: none;
         }
-        #pastes-table tr:hover td {
-            background: var(--gray-medium) !important;
-            color: var(--green-link);
-        }
 
         .paste-title-link {
-            color: var(--green-link);
+            color: var(--brand-green);
             text-decoration: none;
             font-weight: 900;
-            text-shadow: none;
-            transition: color 0.13s;
+            font-family: 'Fira Mono','Consolas',monospace;
+            text-shadow: 0 0 8px #00ffb94b, 0 0 3px #1bcea1;
+            transition: color 0.18s, text-shadow 0.16s;
             letter-spacing: 0.01em;
             word-break: break-word;
-            font-size: 1.13em;
+            font-size: 1.17em;
             filter: none;
         }
-        .paste-title-link:hover {
+        .paste-title-link:hover, .paste-title-link:focus {
             color: #fff;
-            text-shadow: none;
+            text-shadow: 0 3px 13px #00ffbd,0 0 21px #21ffb194;
             filter: none;
             text-decoration: underline;
         }
         .paste-category {
-            color: var(--text-muted);
-            font-size: 1.04em;
+            color: #a7ffc5;
+            font-size: 1.06em;
             font-family: inherit;
             letter-spacing: 0.01em;
-            font-weight: 700;
-            background: var(--gray-accent);
-            padding: 0.31em 1.08em;
-            border-radius: 12px;
+            font-weight: 900;
+            background: linear-gradient(90deg,#183928 45%,#235135);
+            padding: 0.34em 1.14em;
+            border-radius: 14px;
             display: inline-block;
-            box-shadow: none;
             text-align: center;
+            filter: drop-shadow(0 0 2px #43ffade3);
+            border: 1.1px solid #41d29e2e;
         }
         .paste-date {
-            color: var(--text-muted);
-            font-size: 1.01em;
+            color: #7df6c3;
+            font-size: 1.05em;
             font-family: inherit;
             letter-spacing: 0.01em;
             font-weight: 600;
             white-space: nowrap;
-            background: var(--gray-dark);
-            padding: 0.3em 1em;
-            border-radius: 8px;
+            background: #122c272a;
+            padding: 0.31em 1.12em;
+            border-radius: 9px;
             text-align: center;
             display: inline-block;
         }
         .paste-length {
             color: #59ffb6;
-            background: #172018;
+            background: #14382b;
             border-radius: 8px;
-            font-size: 0.97em;
-            padding: 0.31em 0.98em;
-            font-weight: 800;
+            font-size: 1em;
+            padding: 0.33em 1.11em;
+            font-weight: 700;
             display: inline-block;
-            margin-right: 1em;
+            margin-right: 0.7em;
+            filter: drop-shadow(0px 0px 4px #31ffd170);
+            border: 1px solid #4fca9960;
         }
         .paste-actions-btns {
             display: flex;
-            gap: 0.62em;
+            gap: 0.64em;
         }
         .paste-copy-btn,
         .paste-delete-btn {
             cursor: pointer;
-            padding: 0.35em 1.1em;
-            border-radius: 6px;
+            padding: 0.38em 1.23em;
+            border-radius: 7px;
             border: none;
             font-weight: 700;
             font-size: 1em;
             font-family: inherit;
             margin: 0 0.14em;
-            transition: background 0.11s, color 0.13s;
+            transition: background 0.16s, color 0.13s, box-shadow 0.17s;
+            box-shadow: 0 1px 8px #35ffdb13;
         }
         .paste-copy-btn {
-            background: #193526;
-            color: #66ffa7;
+            background: linear-gradient(90deg,#1fae82 5%,#1f4133 80%);
+            color: #b5ffd7;
+            border: 1.4px solid #47ffd467;
         }
-        .paste-copy-btn:hover {
-            background: #21a85b;
-            color: white;
+        .paste-copy-btn:hover, .paste-copy-btn:focus {
+            background: #2bfaa4;
+            color: #232727;
+            box-shadow: 0 0 12px #95ffd4ad;
         }
         .paste-delete-btn {
-            background: #211717;
-            color: #fff277;
+            background: linear-gradient(90deg,#441d1d 25%,#242d29 100%);
+            color: #ffd78c;
+            border: 1.3px solid #ff97632d;
         }
-        .paste-delete-btn:hover {
-            background: #ab2929;
+        .paste-delete-btn:hover, .paste-delete-btn:focus {
+            background: #ce2d2d;
             color: white;
+            box-shadow: 0 0 14px #ff727243,0 0 22px #d6772b28;
         }
         #no-pastes-message {
             display: block;
-            color: #b15e5e;
-            text-shadow: none;
+            color: #ff7b7b;
+            text-shadow: 0 0 9px #db313163;
             text-align: center;
-            font-size: 1.26em;
-            margin: 2.4em 0 0 0;
+            font-size: 1.31em;
+            margin: 2.6em 0 0 0;
             font-family: inherit;
             background: #18191b;
-            padding: 1.4em 0 1.2em 0;
-            border-radius: 13px;
-            font-weight: 800;
+            padding: 1.7em 0 1.3em 0;
+            border-radius: 14px;
+            font-weight: 900;
+            letter-spacing: 0.007em;
+            border: 1.6px solid #ff404028;
         }
 
         .neon-border {
-            border: 2px solid var(--gray-border);
-            box-shadow: none;
-            border-radius: 13px;
+            border: 2.7px solid #5fffc98a;
+            box-shadow: 0 0 15px #00ffadc5, 0 0 9px #24dda78f;
+            border-radius: 17px;
+            overflow: hidden;
         }
 
         @media (max-width: 1460px) {
@@ -422,8 +485,8 @@
                 padding-right: 1.1em;
             }
             .container {
-                margin-left: 0.5em;
-                margin-right: 0.5em;
+                margin-left: 0.7em;
+                margin-right: 0.7em;
                 max-width: 99vw;
                 min-width: 0;
             }
@@ -431,20 +494,21 @@
         @media (max-width: 900px) {
             #pastes-table {
                 min-width: 0;
-                font-size: 0.97em;
+                font-size: .97em;
             }
             .container {
                 border-radius: 0;
             }
             header h1 {
-                font-size: 1.5rem;
+                font-size: 1.6rem;
             }
             header { flex-direction: column; align-items: flex-start; gap: 0.7em; }
             .branding { gap: 0.7em; }
+            .new-paste-btn { padding-left: 1.4em; padding-right: 1.4em; }
         }
-        @media (max-width: 600px) {
+        @media (max-width: 650px) {
             main {
-                padding: 0.4em 0.05em 1em 0.06em;
+                padding: 0.4em 0.08em 1.1em 0.09em;
             }
             .container {
                 border-radius: 0;
@@ -452,16 +516,17 @@
             .options-bar {
                 flex-direction: column;
                 align-items: flex-start;
-                gap: 0.6em;
+                gap: 0.68em;
+                padding: 0.48em 0.4em 0.37em 0.4em;
             }
             .action-bar {
                 flex-direction: column;
                 align-items: stretch;
-                gap: 1em;
+                gap: 1.2em;
             }
             #pastes-table th, #pastes-table td {
-                padding-left: 0.3em;
-                padding-right: 0.3em;
+                padding-left: 0.18em;
+                padding-right: 0.19em;
             }
         }
     </style>
@@ -473,23 +538,35 @@
                 <span class="brand-dot"></span>
                 <h1>darkipedia</h1>
             </div>
-            <a href="pages/paste.html" class="header-link" style="margin-right:0;">New Paste</a>
+            <a href="pages/paste.html" class="header-link">
+                <i class="fa-solid fa-pen-to-square" style="margin-right:0.7em;"></i>
+                New Paste
+            </a>
         </header>
         <main>
             <div class="action-bar">
                 <div class="search-bar-wrap">
+                    <i class="fa-solid fa-magnifying-glass" style="color:#47ffb8c7;opacity:.89;font-size:1.06em;margin-right:0.65em;"></i>
                     <input id="search-input" type="text" placeholder="Search title, content, or category..." autocomplete="off" spellcheck="false" />
-                    <button id="search-clear-btn" title="Clear search">✖</button>
+                    <button id="search-clear-btn" title="Clear search">
+                        <i class="fa-solid fa-xmark"></i>
+                    </button>
                 </div>
-                <a href="pages/paste.html" class="new-paste-btn">✚ New Paste</a>
+                <a href="pages/paste.html" class="new-paste-btn">
+                    <i class="fa-solid fa-plus" style="margin-right:0.85em;"></i>New Paste
+                </a>
             </div>
             <div class="options-bar">
-                <label><span style="font-size:0.99em; color:#5fffa6; font-weight:800;">Category:</span>
+                <label>
+                    <i class="fa-solid fa-folder" style="color:#5fffa6; font-size:1.06em;margin-right:.43em;opacity:.82;"></i>
+                    <span style="font-size:1em; color:#5fffa6; font-weight:800;">Category:</span>
                     <select id="filter-category" class="filter-select">
                         <option value="all">All</option>
                     </select>
                 </label>
-                <label><span style="font-size:0.99em; color:#c0f395; font-weight:800;">Sort by:</span>
+                <label>
+                    <i class="fa-solid fa-sort" style="color:#c0f395; font-size:1.04em;margin-right:.43em;opacity:.85;"></i>
+                    <span style="font-size:1em; color:#c0f395; font-weight:800;">Sort by:</span>
                     <select id="sort-option" class="sort-select">
                         <option value="date-desc">Newest</option>
                         <option value="date-asc">Oldest</option>
@@ -505,11 +582,11 @@
                     <table id="pastes-table">
                         <thead>
                             <tr>
-                                <th style="width: 36%;">Title</th>
-                                <th style="width:14%;">Category</th>
-                                <th style="width: 12%;">Date</th>
-                                <th style="width: 13%;">Size</th>
-                                <th style="width: 14%;">Actions</th>
+                                <th style="width: 36%;"><i class="fa-regular fa-file-lines" style="margin-right:.35em;opacity:.82;filter:drop-shadow(0 0 5px #19ffd850);"></i>Title</th>
+                                <th style="width: 14%;"><i class="fa-solid fa-tags" style="margin-right:.32em;opacity:.82;"></i>Category</th>
+                                <th style="width: 12%;"><i class="fa-solid fa-calendar-days" style="margin-right:.32em;opacity:.82;"></i>Date</th>
+                                <th style="width: 13%;"><i class="fa-solid fa-arrows-left-right-to-line" style="margin-right:.32em;opacity:.82;"></i>Size</th>
+                                <th style="width: 14%;"><i class="fa-solid fa-terminal" style="margin-right:.32em;opacity:.82;"></i>Actions</th>
                             </tr>
                         </thead>
                         <tbody id="pastes-tbody">
@@ -521,19 +598,6 @@
             </section>
         </main>
     </div>
-    <style>
-        .brand-dot {
-            animation: flicker 3.2s infinite alternate;
-        }
-        @keyframes flicker {
-            0%   { background: var(--brand-dot);    }
-            18%  { background: #299b51; }
-            32%  { background: var(--gray-light);}
-            73%  { background: #289c66; }
-            86%  { background: var(--brand-dot);}
-            100% { background: #289c66; }
-        }
-    </style>
     <script>
         const pastesTbody = document.getElementById('pastes-tbody');
         const noPastesMsg = document.getElementById('no-pastes-message');
@@ -573,11 +637,13 @@
         }
 
         function blinkRow(row) {
-            row.style.transition = 'background 0.22s, box-shadow 0.22s';
-            row.style.background = "#223128";
+            row.style.transition = 'background 0.28s, box-shadow 0.23s';
+            row.style.background = "#1a5245";
+            row.style.boxShadow = "0 0 32px #29ffb260";
             setTimeout(() => {
                 row.style.background = "";
-            }, 850);
+                row.style.boxShadow = "";
+            }, 870);
         }
 
         // --- Additional UI Logic for filtering/sorting/search ---
@@ -676,7 +742,7 @@
                 // Length/size
                 const lenTd = document.createElement('td');
                 const len = (paste.content || '').length;
-                lenTd.innerHTML = `<span class="paste-length">${len} chars</span>`;
+                lenTd.innerHTML = `<span class="paste-length"><i class="fa-regular fa-circle-dot" style="color:#59ffbf88;margin-right:0.7em;"></i>${len} chars</span>`;
                 tr.appendChild(lenTd);
 
                 // Actions: Copy / Delete
@@ -685,21 +751,21 @@
 
                 const copyBtn = document.createElement('button');
                 copyBtn.className = 'paste-copy-btn';
-                copyBtn.textContent = 'Copy Link';
+                copyBtn.innerHTML = '<i class="fa-solid fa-link" style="margin-right:0.64em;"></i>Copy Link';
                 copyBtn.title = 'Copy paste link to clipboard';
                 copyBtn.onclick = e => {
                     e.preventDefault();
                     const url = `${location.origin}/pages/view.html?id=${encodeURIComponent(paste.id)}`;
                     navigator.clipboard.writeText(url).then(() => {
-                        copyBtn.textContent = 'Copied!';
-                        setTimeout(() => { copyBtn.textContent = 'Copy Link'; }, 1000);
+                        copyBtn.innerHTML = '<i class="fa-solid fa-check" style="margin-right:0.64em;"></i>Copied!';
+                        setTimeout(() => { copyBtn.innerHTML = '<i class="fa-solid fa-link" style="margin-right:0.64em;"></i>Copy Link'; }, 1100);
                     });
                 };
                 actionsTd.appendChild(copyBtn);
 
                 const deleteBtn = document.createElement('button');
                 deleteBtn.className = 'paste-delete-btn';
-                deleteBtn.textContent = 'Delete';
+                deleteBtn.innerHTML = '<i class="fa-solid fa-trash-can" style="margin-right:0.58em;"></i>Delete';
                 deleteBtn.title = 'Delete this paste';
                 deleteBtn.onclick = e => {
                     e.preventDefault();
@@ -717,7 +783,7 @@
                 // Animation: blink if just added in last 7 seconds
                 let pasteTime = Date.parse(paste.date);
                 if (Date.now() - pasteTime < 7000) {
-                    setTimeout(() => blinkRow(tr), i * 125 + 500);
+                    setTimeout(() => blinkRow(tr), i * 125 + 400);
                 }
                 pastesTbody.appendChild(tr);
             });
@@ -766,8 +832,6 @@
                 applyFiltersAndSort();
             }
         });
-
-        // Paste Deleted via button, handled in deleteBtn onclick above
 
         // Initial Load
         loadPastes();
