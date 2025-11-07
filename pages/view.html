@@ -5,220 +5,272 @@
     <title>View Paste - Darkipedia</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="description" content="View your shared anonymous paste on Darkipedia.">
+    <!-- Style imports similar to index.html -->
     <link rel="stylesheet" href="../css/style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <style>
+        :root {
+            --main-bg: #131616;
+            --box-bg: #191e1c;
+            --border: #1e2123;
+            --accent-bg: #171a19;
+            --brand: #50fc7f;
+            --accent-pink: #ff60e6;
+            --yellow: #fff83a;
+            --red: #ff5667;
+            --border-radius: 13px;
+            --shadow: 0 4px 24px #02110593;
+        }
         body {
-            background: var(--gray-darkest);
-            color: var(--text-main);
-            font-family: 'Fira Mono', 'Consolas', monospace;
-            min-height: 100vh;
             margin: 0;
+            font-family: 'Fira Mono', 'Consolas', monospace;
+            background: var(--main-bg);
+            color: #eeeeee;
+            min-height: 100vh;
+            letter-spacing: 0.01em;
+            scroll-behavior: smooth;
         }
         .container {
-            background: var(--gray-darker);
-            border: 1px solid var(--gray-border);
-            border-radius: var(--radius, 16px);
-            max-width: 900px;
+            margin: 2.7rem auto 0 auto;
+            background: var(--box-bg);
+            border: 1.15px solid var(--border);
+            border-radius: var(--border-radius);
+            max-width: 780px;
             min-width: 320px;
-            margin: 3.2rem auto 2rem auto;
+            width: 95vw;
             box-shadow: var(--shadow);
-            overflow: hidden;
-            width: 100%;
-            padding: 2.25rem 2.2rem 2.15rem 2.2rem;
+            padding: 1.7rem 1.6rem 1.2rem 1.6rem;
             position: relative;
+            overflow: hidden;
         }
         header {
+            background: var(--accent-bg);
+            border-bottom: 1.3px solid var(--border);
+            border-radius: calc(var(--border-radius) - 2.5px) calc(var(--border-radius) - 2.5px) 0 0;
             display: flex;
             align-items: center;
-            padding: 1.35rem 2.1rem 1.15rem 2rem;
-            background: var(--gray-dark);
-            border-bottom: 1.5px solid var(--gray-border);
             justify-content: space-between;
-            gap: 1.1em;
+            gap: 1.2em;
+            padding: 1.09rem 1.29rem 1rem 1.08rem;
             position: relative;
             z-index: 2;
-            border-radius: calc(var(--radius, 16px) - 3px) calc(var(--radius, 16px) - 3px) 0 0;
         }
         header h1 {
-            color: var(--text-head);
-            text-transform: lowercase;
-            letter-spacing: 0.13em;
-            font-size: 2.1rem;
+            color: var(--brand);
+            font-size: 2.0rem;
             margin: 0;
             font-weight: 900;
-            user-select: none;
-            text-shadow: none;
+            letter-spacing: 0.14em;
             display: flex;
             align-items: center;
-            gap: 0.5em;
+            gap: 0.49em;
+            user-select: none;
+            text-transform: lowercase;
+        }
+        .material-icons {
+            font-size: 1.16em;
+            vertical-align: middle;
+        }
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 0.42em;
         }
         .to-home-btn {
-            color: var(--green-link);
-            background: var(--gray-accent);
-            border: 1.1px solid var(--gray-border);
-            border-radius: 4px;
-            padding: 0.55em 1.12em;
-            font-weight: 600;
-            font-size: 1rem;
+            color: var(--brand);
+            background: none;
+            border: 1.1px solid var(--border);
+            border-radius: 6px;
+            padding: 0.5em 1.08em;
+            font-weight: 800;
+            font-size: 1.04rem;
             margin-left: 1em;
             text-decoration: none;
             letter-spacing: 0.04em;
             outline: none;
-            transition: background 0.13s, color 0.16s, border 0.18s;
+            transition: 
+                background 0.12s,
+                border 0.13s,
+                color 0.14s,
+                box-shadow 0.13s;
             display: inline-block;
         }
         .to-home-btn:focus, .to-home-btn:hover {
-            color: #262626;
-            background: var(--green-link);
-            border: 1.1px solid var(--brand-green);
+            background: var(--brand);
+            color: #121d13;
+            border: 1.3px solid var(--brand);
+            box-shadow: 0 2px 10px #72ff9412;
         }
         main {
-            padding: 2.1em 0 2.3em 0;
+            padding: 2em 0 2.3em 0;
         }
         .paste-meta-bar {
             display: flex;
             align-items: center;
-            gap: 1em;
-            color: var(--brand-green);
+            gap: 1.1em;
+            color: var(--brand);
             font-size: 1em;
-            opacity: 0.98;
-            margin-bottom: 1.1em;
-            background: var(--gray-accent);
-            border-radius: 6px;
-            border: 1px solid var(--gray-border);
-            padding: 0.6em 1.1em 0.6em 0.95em;
-            box-shadow: 0 1px 10px #10131340;
+            margin-bottom: 1.14em;
+            background: #161b19;
+            border-radius: 7px;
+            border: 1px solid var(--border);
+            padding: 0.58em 1.03em 0.65em 1em;
+            box-shadow: 0 1px 8px #12281636;
             flex-wrap: wrap;
         }
         .paste-meta-bar .category {
-            color: var(--brand-green);
-            font-weight: 500;
+            color: var(--brand);
+            font-weight: 700;
             letter-spacing: 0.02em;
         }
         .paste-meta-bar .date {
-            color: #ff83e3;
-            font-size: 0.95em;
+            color: var(--accent-pink);
+            font-size: 0.97em;
+            margin-left: 0.32em;
         }
         .paste-meta-bar .sep {
-            color: var(--gray-medium);
+            color: #37614b;
         }
         .paste-content {
-            background: var(--gray-dark);
-            border-radius: 8px;
-            border: 1.1px solid var(--gray-border);
-            font-family: inherit;
-            font-size: 1.13em;
-            line-height: 1.8;
-            padding: 1.22em 1.33em;
-            color: var(--text-main);
-            box-shadow: 0 1px 18px #10131355;
+            background: #191e1c;
+            border-radius: 9px;
+            border: 1.2px solid var(--border);
+            font-size: 1.15em;
+            line-height: 1.75;
+            padding: 1.08em 1.15em;
+            color: #d6ffe3;
+            box-shadow: 0 1px 14px #22db7625;
             margin-top: 2em;
-            word-break: break-word;
             min-height: 7em;
             overflow-x: auto;
-            transition: background 0.17s;
         }
         .paste-content img {
             display: block;
-            max-width: 92vw;
-            max-height: 450px;
-            margin: 0.9em auto 0.9em auto;
+            max-width: 93vw;
+            max-height: 420px;
+            margin: 1em auto;
             border-radius: 8px;
-            box-shadow: 0 1px 14px #4ff66944, 0 0 2px #fff3;
-            border: 1.1px solid var(--gray-border);
-            background: var(--gray-light);
+            box-shadow: 0 1px 8px #50fc7f37;
+            border: 1px solid var(--border);
+            background: #222725;
             transition: box-shadow 0.19s;
+            object-fit: contain;
         }
         .paste-content a {
-            color: var(--green-link);
+            color: var(--brand);
             text-decoration: underline;
+            transition: color .11s;
             word-break: break-all;
-            transition: color .14s;
         }
-        .paste-content a:hover,.paste-content a:focus{
-            color: #fff83a;
+        .paste-content a:hover,
+        .paste-content a:focus {
+            color: var(--yellow);
             outline: none;
         }
         .paste-content pre {
-            background: var(--gray-table-head);
-            color: #fffaab;
-            padding: 0.55em 0.7em;
-            border-radius: 6px;
-            margin: 1em 0;
+            background: #151b16;
+            color: #e3faaf;
+            padding: 0.63em 0.78em;
+            border-radius: 5px;
+            margin: 0.85em 0;
             overflow-x: auto;
-            font-size: 0.97em;
+            font-size: 0.99em;
+            font-family: 'Fira Mono', 'Consolas', monospace;
         }
         #not-found-message {
             display: none;
-            color: #ff425f;
+            color: var(--red);
             font-weight: bold;
-            background: #21141b;
-            padding: 1.3em 1em;
-            border-radius: 7px;
-            border: 1.5px solid #3b1c27;
-            margin-top: 2.5em;
+            background: #241017;
+            padding: 1.19em 1em;
+            border-radius: 8px;
+            border: 1.7px solid #3b1632;
+            margin-top: 2.2em;
             text-align: center;
-            font-size: 1.19em;
-            box-shadow: 0 1px 8px #ff4fce44;
+            font-size: 1.18em;
+            box-shadow: 0 1px 8px #ff4fce42;
+            animation: fadein-notfound 0.8s;
         }
-        /* Copy button styles */
+        @keyframes fadein-notfound {
+            from { opacity: 0; transform: scale(0.98);}
+            to { opacity: 1; transform: scale(1);}
+        }
+
         .copy-btn {
-            background: var(--gray-accent);
-            color: var(--brand-green);
-            border: 1.1px solid var(--gray-medium);
-            border-radius: 4px;
-            padding: 0.34em 0.97em;
-            font-size: 1em;
+            background: #161b19;
+            color: var(--brand);
+            border: 1.2px solid #2a4132;
+            border-radius: 5px;
+            padding: 0.38em 1.05em;
+            font-size: 1.06em;
             margin-left: 1em;
-            font-weight: 500;
+            font-weight: 600;
             cursor: pointer;
             outline: none;
-            transition: background 0.13s, color 0.16s, border 0.18s;
+            transition: 
+                background 0.13s, 
+                color 0.15s, 
+                border 0.16s, 
+                box-shadow 0.12s;
+            display: flex;
+            align-items: center;
+            gap: 0.37em;
         }
         .copy-btn:focus, .copy-btn:hover {
-            background: var(--brand-green);
-            color: #171e13;
-            border: 1.1px solid var(--brand-green);
+            background: var(--brand);
+            color: #14211a;
+            border: 1.3px solid var(--brand);
+            box-shadow: 0 2px 9px #50fc7f2e;
         }
+        .copy-btn .material-icons {
+            font-size: 1.12em;
+        }
+
+        /* Responsive improvements */
         @media (max-width: 650px) {
             .container {
                 max-width: 100vw;
                 border-radius: 0;
-                padding: 0.7rem 0 1.2rem 0;
+                padding: 0.6rem 0 1.1rem 0;
             }
             main {
-                padding: 1.1em 0.7em 2.1em 0.7em;
+                padding: 1em 0.6em 1.5em 0.6em;
             }
             .paste-content {
                 padding: 0.7em 0.7em;
+                font-size: 0.99em;
             }
             .paste-meta-bar {
                 flex-direction: column;
                 align-items: flex-start;
-                font-size: 0.97em;
-                gap: 0.22em;
+                font-size: 0.98em;
+                gap: 0.19em;
+                padding: 0.56em 0.66em;
             }
             header {
-                padding: 1.15em 0.6em 1em 1.05em;
+                padding: 0.93em 0.4em 0.83em 0.93em;
                 flex-direction: column;
                 align-items: flex-start;
             }
             header h1 {
-                font-size: 1.16em;
+                font-size: 1.20em;
+                word-break: break-word;
             }
             .to-home-btn {
                 font-size: 1em;
-                padding: 0.5em 0.85em;
+                padding: 0.46em 0.8em;
                 margin-left: 0;
-                margin-top: 0.55em;
+                margin-top: 0.53em;
             }
             .paste-content img {
-                max-width: 99vw;
-                max-height: 220px;
+                max-width: 98vw;
+                max-height: 170px;
             }
             .copy-btn {
-                margin: 1.1em 0 0 0;
+                margin: 1em 0 0 0;
                 width: 100%;
+                justify-content: center;
             }
         }
     </style>
@@ -226,12 +278,18 @@
 <body>
     <div class="container">
         <header>
-            <h1 id="paste-title" aria-live="polite">Loading...</h1>
-            <div style="display:flex;align-items:center;gap:.4em;">
+            <h1 id="paste-title" aria-live="polite">
+                <span class="material-icons" aria-hidden="true" style="color:var(--brand);">description</span>
+                Loading...
+            </h1>
+            <div class="header-actions">
                 <button class="copy-btn" id="copy-link" type="button" title="Copy link to this paste" aria-label="Copy Link">
-                    📋 Copy Link
+                    <span class="material-icons" aria-hidden="true">link</span> Copy Link
                 </button>
-                <a href="../index.html" class="to-home-btn" title="Back to Home">&larr; Home</a>
+                <a href="../index.html" class="to-home-btn" title="Back to Home">
+                    <span class="material-icons" style="vertical-align:-3px" aria-hidden="true">arrow_back</span>
+                    Home
+                </a>
             </div>
         </header>
         <main>
@@ -240,10 +298,13 @@
                 <span class="sep" aria-hidden="true">|</span>
                 <span id="paste-date" class="date"></span>
             </div>
-            <article id="paste-content" class="paste-content" tabindex="0">
+            <article id="paste-content" class="paste-content" tabindex="0" aria-label="Paste content" aria-live="polite">
                 <!-- Content will appear here -->
             </article>
-            <div id="not-found-message" role="alert">Paste not found.</div>
+            <div id="not-found-message" role="alert">
+                <span class="material-icons" aria-hidden="true" style="vertical-align:middle;font-size:1.18em;margin-right:0.21em;">error_outline</span>
+                Paste not found.
+            </div>
         </main>
     </div>
     <script>
@@ -253,21 +314,19 @@
             return params.get(name);
         }
 
-        // Basic image URL detector
+        // Improved image extension check (allows query strings and fragments)
         function isImageUrl(url) {
-            return /^https?:\/\/[^\s]+?\.(jpg|jpeg|png|gif|bmp|webp|svg)(\?[^ \n]*)?$/i.test(url);
+            return /^https?:\/\/[^\s]+?\.(jpg|jpeg|png|gif|bmp|webp|svg)([?#][^\s]*)?$/i.test(url);
         }
 
         // --- Rich Content Renderer ---
         function renderContent(text) {
-            if (!text) return '<em style="color:#ff4ffe;">No content.</em>';
+            if (!text) return '<em style="color:' + (getComputedStyle(document.body).getPropertyValue('--accent-pink') || "#ff4ffe") + ';">No content.</em>';
             function escapeHtml(str) {
                 return str.replace(/[&<>"']/g, m => ({
                     '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
                 }[m]));
             }
-
-            // Markdown-style code fences and automatic link/image
             let html = '';
             const lines = text.split('\n');
             let inCode = false;
@@ -295,8 +354,9 @@
                 let imgMd = ln.match(/!\[([^\]]*)\]\((https?:\/\/[^\s]+?\.(jpg|jpeg|png|gif|bmp|webp|svg)[^\)]*)\)/i);
                 if (imgMd) {
                     html += `<img src="${imgMd[2]}" alt="${escapeHtml(imgMd[1])}">`;
-                    if (ln.replace(imgMd[0], '').trim()) {
-                        html += '<br>' + escapeHtml(ln.replace(imgMd[0], ''));
+                    const rest = ln.replace(imgMd[0], '').trim();
+                    if (rest) {
+                        html += '<br>' + escapeHtml(rest);
                     }
                     continue;
                 }
@@ -305,13 +365,23 @@
                     html += `<img src="${ln.trim()}" alt="pasted image">`;
                     continue;
                 }
-                // Auto-link URLs (do not relink image lines)
-                ln = ln.replace(/(https?:\/\/[^\s<>"']+)/g, url => {
+                // Markdown-style links: [text](url)
+                ln = ln.replace(/\[([^\]]+)]\((https?:\/\/[^\s)]+)\)/g, (m, text, url) => {
+                    if (isImageUrl(url)) {
+                        return `<img src="${url}" alt="${escapeHtml(text)}">`;
+                    }
+                    return `<a href="${url}" target="_blank" rel="noopener noreferrer">${escapeHtml(text)}</a>`;
+                });
+                // Autolink URLs (avoid double-linking images)
+                ln = ln.replace(/(https?:\/\/[^\s<>"'()]+)/g, url => {
                     if (isImageUrl(url)) {
                         return `<img src="${url}" alt="pasted image">`;
                     }
                     return `<a href="${url}" target="_blank" rel="noopener noreferrer">${escapeHtml(url)}</a>`;
                 });
+                // Basic **bold** & *italic*
+                ln = ln.replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>');
+                ln = ln.replace(/\*([^*]+)\*/g, '<em>$1</em>');
                 // Preserve whitespace & breaks
                 html += escapeHtml(ln).replace(/ {2}/g, '&nbsp; ') + '<br>';
             }
@@ -324,7 +394,16 @@
         // --- Paste Display Logic ---
         function displayPaste(paste) {
             const titleText = paste.title && paste.title.trim() ? paste.title.trim() : `Untitled Paste (${paste.id})`;
-            document.getElementById('paste-title').textContent = titleText;
+            const titleIcon = document.createElement('span');
+            titleIcon.className = "material-icons";
+            titleIcon.style.color = getComputedStyle(document.body).getPropertyValue('--brand') || "#51ff8d";
+            titleIcon.textContent = "description";
+            const titleEl = document.getElementById('paste-title');
+            // Remove previous icon
+            while (titleEl.firstChild) titleEl.removeChild(titleEl.firstChild);
+            titleEl.appendChild(titleIcon);
+            titleEl.append(' ', titleText);
+
             document.getElementById('paste-category').textContent = paste.category ? paste.category : 'Uncategorized';
 
             let dateStr = 'Unknown';
@@ -334,12 +413,9 @@
             }
             document.getElementById('paste-date').textContent = dateStr;
 
-            let contentHtml = '';
-            if (paste.content && paste.content.trim() !== '') {
-                contentHtml = renderContent(paste.content);
-            } else {
-                contentHtml = '<em style="color:#ff4ffe;">No content.</em>';
-            }
+            const contentHtml = paste.content && paste.content.trim() !== ''
+                ? renderContent(paste.content)
+                : '<em style="color:' + (getComputedStyle(document.body).getPropertyValue('--accent-pink') || "#ff4ffe") + ';">No content.</em>';
             document.getElementById('paste-content').innerHTML = contentHtml;
         }
 
@@ -350,18 +426,26 @@
                 copyBtn.addEventListener('click', function() {
                     navigator.clipboard.writeText(window.location.href)
                         .then(() => {
-                            copyBtn.textContent = "✅ Link Copied!";
+                            copyBtn.innerHTML = '<span class="material-icons" aria-hidden="true" style="color:'+(getComputedStyle(document.body).getPropertyValue('--brand')||'#22e855')+';">check_circle</span> Link Copied!';
                             setTimeout(() => {
-                                copyBtn.textContent = "📋 Copy Link";
-                            }, 1200);
+                                copyBtn.innerHTML = '<span class="material-icons" aria-hidden="true">link</span> Copy Link';
+                            }, 1300);
                         })
                         .catch(() => {
-                            copyBtn.textContent = "❌ Copy Failed!";
+                            copyBtn.innerHTML = '<span class="material-icons" aria-hidden="true" style="color:'+(getComputedStyle(document.body).getPropertyValue('--red')||'#ff5370')+';">error</span> Copy Failed!';
                             setTimeout(() => {
-                                copyBtn.textContent = "📋 Copy Link";
-                            }, 1300);
+                                copyBtn.innerHTML = '<span class="material-icons" aria-hidden="true">link</span> Copy Link';
+                            }, 1500);
                         });
                 });
+            }
+        });
+
+        // --- Keyboard accessibility (focus paste content on load) ---
+        window.addEventListener('DOMContentLoaded', function () {
+            const article = document.getElementById('paste-content');
+            if (article) {
+                setTimeout(() => article.focus(), 180);
             }
         });
 
@@ -373,10 +457,9 @@
             const contentArt = document.getElementById('paste-content');
             const titleEl = document.getElementById('paste-title');
 
-            // Defensive: Hide all
             function hideEverythingNotFound() {
                 notFoundMsg.style.display = 'block';
-                titleEl.textContent = 'Paste Not Found';
+                titleEl.innerHTML = '<span class="material-icons" style="color:'+ (getComputedStyle(document.body).getPropertyValue('--red')||'#ff5f90') +';vertical-align:middle;">highlight_off</span> Paste Not Found';
                 metaBar.style.display = 'none';
                 contentArt.style.display = 'none';
             }
@@ -386,15 +469,12 @@
                 return;
             }
             let pastes = [];
-            // Safer fallback for backwards compatibility
-            try {
-                pastes = JSON.parse(localStorage.getItem('darkipedia_pastes')) || [];
-            } catch(e) { pastes = []; }
-            if (!pastes.length) {
-                try {
-                    pastes = JSON.parse(localStorage.getItem('pastes')) || [];
-                } catch(e) { pastes = []; }
+            // Use new, fallback to old
+            try { pastes = JSON.parse(localStorage.getItem('darkipedia_pastes')) || []; } catch {}
+            if (!Array.isArray(pastes) || !pastes.length) {
+                try { pastes = JSON.parse(localStorage.getItem('pastes')) || []; } catch {}
             }
+            if (!Array.isArray(pastes)) pastes = [];
             const paste = pastes.find(p => String(p.id) === String(id));
             if (paste) {
                 metaBar.style.display = '';
