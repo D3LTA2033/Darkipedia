@@ -1,0 +1,475 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Darkipedia - Anonymous Paste Platform</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- SEO meta tags -->
+    <meta name="description" content="Darkipedia is an anonymous paste platform for sharing code snippets, text files, and notes safely and quickly. No logins or registrations required.">
+    <meta name="keywords" content="pastebin, anonymous, paste platform, code sharing, text snippets, dark mode, privacy, temp notes, paste, share code">
+    <meta name="author" content="Darkipedia Team">
+    <link rel="canonical" href="https://darkipedia.example.com/"> <!-- Replace example.com with your domain -->
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="Darkipedia - Anonymous Paste Platform">
+    <meta property="og:description" content="Share text or code anonymously. No sign up. Minimalist and private.">
+    <meta property="og:url" content="https://darkipedia.example.com/">
+    <meta property="og:site_name" content="Darkipedia">
+    <meta property="og:image" content="https://darkipedia.example.com/assets/og-image.png"> <!-- Replace with actual OG image url -->
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Darkipedia - Anonymous Paste Platform">
+    <meta name="twitter:description" content="Share text, notes, or code securely and anonymously with Darkipedia.">
+    <meta name="twitter:image" content="https://darkipedia.example.com/assets/og-image.png"> <!-- Replace with actual OG image url -->
+    <!-- Font for code-y feel, no glow -->
+    <link href="https://fonts.googleapis.com/css?family=Fira+Mono:400,700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --gray-darkest: #111214;
+            --gray-darker: #18191b;
+            --gray-dark: #202124;
+            --gray-medium: #262626;
+            --gray-light: #343438;
+            --gray-border: #252529;
+            --gray-table-head: #1a1b1e;
+            --gray-table-row: #19191d;
+            --gray-accent: #323233;
+            --green-link: #46ff6e;
+            --text-main: #bbbbbb;
+            --text-head: #e0e0e0;
+            --text-muted: #858585;
+            --brand-green: #50fa7b;
+            --brand-dot: #4ff669;
+            --shadow: 0 0 10px #101313e8;
+        }
+
+        html, body {
+            background: var(--gray-darkest);
+            color: var(--text-main);
+            font-family: 'Fira Mono', 'Consolas', monospace;
+            min-height: 100vh;
+            margin: 0;
+        }
+
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            min-height: 100vh;
+        }
+
+        .container {
+            margin: 3.2rem 0 2rem;
+            background: var(--gray-darker);
+            box-shadow: var(--shadow);
+            max-width: 900px;
+            min-width: 320px;
+            border-radius: 8px;
+            border: 1px solid var(--gray-border);
+            overflow: hidden;
+            width: 100%;
+        }
+
+        header {
+            display: flex;
+            align-items: center;
+            padding: 1.35rem 2.1rem 1.15rem 2rem;
+            background: var(--gray-dark);
+            border-bottom: 1.5px solid var(--gray-border);
+            box-shadow: none;
+            justify-content: space-between;
+            gap: 1.1em;
+            position: relative;
+            z-index: 2;
+        }
+
+        .branding {
+            display: flex;
+            align-items: center;
+            gap: 1.11em;
+        }
+
+        header h1 {
+            color: var(--text-head);
+            text-transform: lowercase;
+            letter-spacing: 0.13em;
+            font-size: 2.1rem;
+            margin: 0;
+            font-weight: 900;
+            user-select: none;
+            text-shadow: none;
+        }
+
+        .brand-dot {
+            height: 1.1em;
+            width: 1.1em;
+            margin-right: -0.23em;
+            border-radius: 50%;
+            background: var(--brand-dot);
+            border: 1.5px solid var(--gray-border);
+            display: inline-block;
+        }
+
+        .header-link {
+            color: var(--green-link);
+            background: var(--gray-accent);
+            border: 1.1px solid var(--gray-border);
+            border-radius: 4px;
+            padding: 0.55em 1.12em;
+            font-weight: 600;
+            font-size: 1rem;
+            margin-left: 1em;
+            text-decoration: none;
+            letter-spacing: 0.04em;
+            outline: none;
+            transition: 
+                background 0.13s,
+                color 0.16s,
+                border 0.18s;
+            display: inline-block;
+            text-shadow: none;
+            position: relative;
+        }
+        .header-link:hover, .header-link:focus {
+            background: #18191c;
+            color: #fff;
+            border-color: #2deb68;
+        }
+
+        main {
+            padding: 2.3em 2.2em 1.4em 2.2em;
+            background: transparent;
+            min-height: 60vh;
+        }
+
+        .action-bar {
+            margin-bottom: 2em;
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+        }
+
+        .new-paste-btn {
+            background: var(--gray-dark);
+            color: var(--green-link);
+            border: 1.3px solid var(--gray-border);
+            font-family: inherit;
+            font-size: 1em;
+            padding: 0.64em 1.8em;
+            border-radius: 7px;
+            font-weight: 700;
+            cursor: pointer;
+            outline: none;
+            transition: 
+                box-shadow 0.16s, 
+                border 0.15s,
+                color 0.12s,
+                background 0.12s;
+            letter-spacing: 0.045em;
+            text-decoration: none;
+            position: relative;
+            z-index: 2;
+        }
+        .new-paste-btn:hover, .new-paste-btn:focus {
+            background: var(--gray-accent);
+            color: #fff;
+            border-color: #3ff088;
+        }
+
+        #pastes-section {
+            margin-top: 0.1em;
+        }
+
+        #pastes-table-wrap {
+            background: var(--gray-darker);
+            border-radius: 7px;
+            border: 1px solid var(--gray-border);
+            overflow-x: auto;
+            box-shadow: none;
+            padding: 0.18em 0.35em 0.25em 0.35em;
+        }
+
+        #pastes-table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0 0.45em;
+            margin: 0;
+            color: var(--text-main);
+            font-size: 1.02em;
+            background: none;
+        }
+
+        #pastes-table th, #pastes-table td {
+            padding: 0.72em 1.02em;
+            text-align: left;
+            font-family: inherit;
+            vertical-align: middle;
+            background: var(--gray-table-row);
+            border: none;
+        }
+
+        #pastes-table th {
+            color: var(--text-head);
+            background: var(--gray-table-head);
+            font-size: 1.01em;
+            letter-spacing: 0.07em;
+            font-weight: 800;
+            text-shadow: none;
+            border-radius: 7px 7px 0 0;
+            border-bottom: 1.5px solid var(--gray-border);
+            user-select: none;
+        }
+
+        #pastes-table td {
+            border-radius: 5px 5px 8px 8px;
+            box-shadow: none;
+            background: var(--gray-table-row);
+        }
+
+        #pastes-table tr {
+            transition: background 0.15s;
+        }
+        #pastes-table tr:last-child td {
+            border-bottom: none;
+        }
+        #pastes-table tr:hover td {
+            background: var(--gray-medium) !important;
+            color: var(--green-link);
+        }
+
+        .paste-title-link {
+            color: var(--green-link);
+            text-decoration: none;
+            font-weight: 800;
+            text-shadow: none;
+            transition: color 0.13s;
+            letter-spacing: 0.01em;
+            word-break: break-word;
+            font-size: 1.04em;
+            filter: none;
+        }
+        .paste-title-link:hover {
+            color: #fff;
+            text-shadow: none;
+            filter: none;
+        }
+        .paste-category {
+            color: var(--text-muted);
+            font-size: 0.99em;
+            font-family: inherit;
+            letter-spacing: 0.01em;
+            font-weight: 700;
+            background: var(--gray-accent);
+            padding: 0.23em 0.75em;
+            border-radius: 9px;
+            display: inline-block;
+            box-shadow: none;
+            text-align: center;
+        }
+        .paste-date {
+            color: var(--text-muted);
+            font-size: 0.98em;
+            font-family: inherit;
+            letter-spacing: 0.01em;
+            font-weight: 600;
+            white-space: nowrap;
+            background: var(--gray-dark);
+            padding: 0.23em 0.78em;
+            border-radius: 7px;
+            text-align: center;
+            display: inline-block;
+        }
+        #no-pastes-message {
+            display: block;
+            color: #b15e5e;
+            text-shadow: none;
+            text-align: center;
+            font-size: 1.15em;
+            margin: 2.8em 0 0 0;
+            font-family: inherit;
+            background: #18191b;
+            padding: 1.2em 0 1em 0;
+            border-radius: 10px;
+            font-weight: 700;
+        }
+
+        /* Remove glow borders, make subtle */
+        .neon-border {
+            border: 1.5px solid var(--gray-border);
+            box-shadow: none;
+            border-radius: 11px;
+        }
+
+        @media (max-width: 1020px) {
+            .container {
+                margin: 2em 0 1.2em 0;
+                max-width: 99vw;
+                min-width: 0;
+            }
+            main {
+                padding: 1.1em 0.38em 1.1em 0.38em;
+            }
+            header {
+                padding: 1.1rem 0.5rem 0.9rem 1.02rem;
+            }
+        }
+        @media (max-width: 610px) {
+            main {
+                padding: 0.47em 0.04em 0.92em 0.07em;
+            }
+            .container {
+                border-radius: 0;
+            }
+            header h1 {
+                font-size: 1.1rem;
+            }
+            header { flex-direction: column; align-items: start; }
+            .branding { gap: 0.47em; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container neon-border">
+        <header>
+            <div class="branding">
+                <span class="brand-dot"></span>
+                <h1>darkipedia</h1>
+            </div>
+            <a href="pages/paste.html" class="header-link" style="margin-right:0;">New Paste</a>
+        </header>
+        <main>
+            <div class="action-bar">
+                <a href="pages/paste.html" class="new-paste-btn">✚ New Paste</a>
+            </div>
+            <section id="pastes-section">
+                <div id="pastes-table-wrap">
+                    <table id="pastes-table">
+                        <thead>
+                            <tr>
+                                <th style="width: 41%;">Title</th>
+                                <th style="width: 18%;">Category</th>
+                                <th style="width: 25%;">Date</th>
+                            </tr>
+                        </thead>
+                        <tbody id="pastes-tbody">
+                            <!-- Pastes loaded here -->
+                        </tbody>
+                    </table>
+                </div>
+                <p id="no-pastes-message" style="display:none;">No pastes yet. Paste something legendary.</p>
+            </section>
+        </main>
+    </div>
+    <style>
+        .brand-dot {
+            animation: flicker 3.2s infinite alternate;
+        }
+        @keyframes flicker {
+            0%   { background: var(--brand-dot);    }
+            18%  { background: #299b51; }
+            32%  { background: var(--gray-light);}
+            73%  { background: #289c66; }
+            86%  { background: var(--brand-dot);}
+            100% { background: #289c66; }
+        }
+    </style>
+    <script>
+        // No neon, just minimalist, but still fancy table display
+        const pastesTbody = document.getElementById('pastes-tbody');
+        const noPastesMsg = document.getElementById('no-pastes-message');
+
+        function formatPasteDate(iso) {
+            if (!iso) return "";
+            const d = new Date(iso);
+            // Human-friendly: Today, Yesterday, or Date
+            const today = new Date();
+            const pad = n => n.toString().padStart(2, '0');
+            const isToday =
+                d.getDate() === today.getDate() &&
+                d.getMonth() === today.getMonth() &&
+                d.getFullYear() === today.getFullYear();
+            const yest = new Date();
+            yest.setDate(today.getDate()-1);
+            const isYest =
+                d.getDate() === yest.getDate() &&
+                d.getMonth() === yest.getMonth() &&
+                d.getFullYear() === yest.getFullYear();
+
+            let dateStr = `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
+            let timeStr = `${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}`;
+
+            if (isToday)
+                return `Today, ${timeStr}`;
+            else if (isYest)
+                return `Yesterday, ${timeStr}`;
+            else
+                return `${dateStr} ${timeStr}`;
+        }
+
+        function blinkRow(row) {
+            row.style.transition = 'background 0.22s, box-shadow 0.22s';
+            row.style.background = "#223128";
+            setTimeout(() => {
+                row.style.background = "";
+            }, 850);
+        }
+
+        function loadPastes() {
+            let pastes = [];
+            try {
+                pastes = JSON.parse(localStorage.getItem('pastes')) || [];
+            } catch(e) {
+                pastes = [];
+            }
+
+            // Show newest first
+            pastes = Array.isArray(pastes) ? pastes.slice().sort(
+                (a, b) => (b.date || 0).localeCompare(a.date || 0)) : [];
+
+            pastesTbody.innerHTML = '';
+
+            if(pastes.length === 0) {
+                noPastesMsg.style.display = 'block';
+            } else {
+                noPastesMsg.style.display = 'none';
+                pastes.forEach((paste, i) => {
+                    const tr = document.createElement('tr');
+
+                    // Title/link
+                    const titleTd = document.createElement('td');
+                    const a = document.createElement('a');
+                    a.href = `pages/view.html?id=${encodeURIComponent(paste.id)}`;
+                    a.className = 'paste-title-link';
+                    a.textContent = paste.title && paste.title.trim() ? paste.title : `Untitled`;
+                    titleTd.appendChild(a);
+                    tr.appendChild(titleTd);
+
+                    // Category
+                    const catTd = document.createElement('td');
+                    catTd.className = 'paste-category';
+                    catTd.textContent = paste.category?.trim() || 'Uncategorized';
+                    tr.appendChild(catTd);
+
+                    // Date
+                    const dateTd = document.createElement('td');
+                    dateTd.className = 'paste-date';
+                    if (paste.date)
+                        dateTd.textContent = formatPasteDate(paste.date);
+                    else
+                        dateTd.textContent = '';
+                    tr.appendChild(dateTd);
+
+                    // Animation: blink if just added in last 7 seconds
+                    let pasteTime = Date.parse(paste.date);
+                    if (Date.now() - pasteTime < 7000) {
+                        setTimeout(() => blinkRow(tr), i * 120 + 550);
+                    }
+
+                    pastesTbody.appendChild(tr);
+                });
+            }
+        }
+        loadPastes();
+    </script>
+</body>
+</html>

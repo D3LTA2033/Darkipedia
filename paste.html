@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Create New Paste - Darkipedia</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Create a New Paste</h1>
+            <a href="../index.html" class="to-home-btn">← Back to Home</a>
+            <p>Share your thoughts, stories, leaks, <span style="color:#53f5ff">images</span>, or anything anonymously.</p>
+        </header>
+        <main>
+            <div class="paste-form-box">
+                <form id="paste-form" class="form" autocomplete="off">
+                    <div class="form-group">
+                        <label for="paste-title">Title</label>
+                        <input
+                            type="text"
+                            id="paste-title"
+                            name="title"
+                            maxlength="100"
+                            placeholder="Enter a title (optional)"
+                        >
+                    </div>
+                    <div class="form-group">
+                        <label for="paste-content">Content <span style="color:#ff4ffe;">*</span></label>
+                        <textarea
+                            id="paste-content"
+                            name="content"
+                            rows="12"
+                            required
+                            placeholder="Write your paste here..."
+                        ></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="paste-images">Attach Images (optional, up to 5, .jpg .jpeg .png .gif, max 2MB each)</label>
+                        <input
+                            type="file"
+                            id="paste-images"
+                            name="images"
+                            accept=".jpg,.jpeg,.png,.gif,image/jpeg,image/png,image/gif"
+                            multiple
+                        >
+                        <div class="image-preview-list" id="image-preview-list"></div>
+                    </div>
+                    <div class="form-group">
+                        <label for="paste-category">Category <span style="color:#ff4ffe;">*</span></label>
+                        <select id="paste-category" name="category" required>
+                            <option value="">Select a category</option>
+                            <option value="Tech">Tech</option>
+                            <option value="Leaks">Leaks</option>
+                            <option value="Stories">Stories</option>
+                            <option value="Knowledge">Knowledge</option>
+                            <option value="Misc">Misc</option>
+                        </select>
+                    </div>
+                    <button type="submit" class="btn">Publish</button>
+                    <div class="form-error" style="display:none;"></div>
+                </form>
+            </div>
+        </main>
+    </div>
+    <script src="../js/paste.js"></script>
+</body>
+</html>
