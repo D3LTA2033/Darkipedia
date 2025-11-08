@@ -1,4 +1,28 @@
 {
-  "users": []
+  "users": [
+    {
+      "id": "dfb152cecd516e2a0628067eafc703c4",
+      "username": "founder",
+      "password_hash": "0d7fe086c06a74be5823c72d061f15c34edcb4e4d93c0ab4de3fcaf5c311142e",
+      "role": "founder",
+      "fa_code": "2033",
+      "created_at": "2025-11-08T11:51:43.010Z"
+    },
+    {
+      "id": "111cb582197550c1a3cb8e5c53e8b4fb",
+      "username": "staff1",
+      "password_hash": "3d76cce676a666d9a560ba8a3249267d1e0f27912ec246281af02058305b4abb",
+      "role": "staff",
+      "fa_code": "2033",
+      "created_at": "2025-11-08T11:51:43.018Z"
+    },
+    {
+      "id": "1d4ecc06ca9b346591faaf8ed31d5175",
+      "username": "manager1",
+      "password_hash": "4d345e541934feb8c061892de398cfe80ee1372e30b2f671f50e616a99a5db59",
+      "role": "manager",
+      "fa_code": "2033",
+      "created_at": "2025-11-08T11:51:43.018Z"
+    }
+  ]
 }
-
