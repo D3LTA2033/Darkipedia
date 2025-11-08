@@ -8,7 +8,7 @@ function hashPassword(password) {
     return crypto.createHash('sha256').update(password + 'darkipedia_salt_2024').digest('hex');
 }
 
-// Complex passwords for default users
+// Complex passwords for default users with 2FA codes
 const defaultUsers = {
     users: [
         {
@@ -16,6 +16,7 @@ const defaultUsers = {
             username: 'founder',
             password_hash: hashPassword('F0und3r@2024!XyZ#Secure'),
             role: 'founder',
+            fa_code: '2033',
             created_at: new Date().toISOString()
         },
         {
@@ -23,6 +24,7 @@ const defaultUsers = {
             username: 'staff1',
             password_hash: hashPassword('St@ff$2024!AbC#Secure'),
             role: 'staff',
+            fa_code: '2033',
             created_at: new Date().toISOString()
         },
         {
@@ -30,6 +32,7 @@ const defaultUsers = {
             username: 'manager1',
             password_hash: hashPassword('M@n@g3r$2024!DeF#Secure'),
             role: 'manager',
+            fa_code: '2033',
             created_at: new Date().toISOString()
         }
     ]
@@ -60,8 +63,8 @@ defaultUsers.users.forEach(user => {
 fs.writeFileSync(USERS_FILE, JSON.stringify(existingUsers, null, 2));
 console.log('\nUsers initialized!');
 console.log('\nDefault credentials:');
-console.log('Founder: username=founder, password=F0und3r@2024!XyZ#Secure');
-console.log('Staff: username=staff1, password=St@ff$2024!AbC#Secure');
-console.log('Manager: username=manager1, password=M@n@g3r$2024!DeF#Secure');
-console.log('\n⚠️  Change these passwords after first login!');
+console.log('Founder: username=founder, password=F0und3r@2024!XyZ#Secure, 2FA=2033');
+console.log('Staff: username=staff1, password=St@ff$2024!AbC#Secure, 2FA=2033');
+console.log('Manager: username=manager1, password=M@n@g3r$2024!DeF#Secure, 2FA=2033');
+console.log('\n⚠️  Change these passwords and 2FA codes after first login!');
 
