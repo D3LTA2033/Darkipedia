@@ -129,9 +129,27 @@ const db = new sqlite3.Database(DB_PATH, (err) => {
                 console.error('Error creating pastes table:', err.message);
             } else {
                 console.log('Pastes table ready');
-                // Add new columns
-                ['role', 'user_id', 'pinned', 'views', 'likes', 'tags', 'language', 'is_private', 'expires_at', 'image_url'].forEach(col => {
-                    db.run(`ALTER TABLE pastes ADD COLUMN ${col} TEXT DEFAULT NULL`, () => {});
+                // Add new columns safely (ignore errors if column already exists)
+                const columnsToAdd = [
+                    { name: 'role', def: 'TEXT DEFAULT "user"' },
+                    { name: 'user_id', def: 'TEXT' },
+                    { name: 'pinned', def: 'INTEGER DEFAULT 0' },
+                    { name: 'views', def: 'INTEGER DEFAULT 0' },
+                    { name: 'likes', def: 'INTEGER DEFAULT 0' },
+                    { name: 'tags', def: 'TEXT' },
+                    { name: 'language', def: 'TEXT' },
+                    { name: 'is_private', def: 'INTEGER DEFAULT 0' },
+                    { name: 'expires_at', def: 'TEXT' },
+                    { name: 'image_url', def: 'TEXT' }
+                ];
+                
+                columnsToAdd.forEach(({ name, def }) => {
+                    db.run(`ALTER TABLE pastes ADD COLUMN ${name} ${def}`, (err) => {
+                        // Ignore "duplicate column" errors
+                        if (err && !err.message.includes('duplicate column name')) {
+                            // Column might already exist, which is fine
+                        }
+                    });
                 });
             }
         });
@@ -196,135 +214,175 @@ function getRolePriority(role) {
 
 // GET all pastes (enhanced with filtering and sorting)
 app.get('/api/pastes', (req, res) => {
-    const { search, category, tag, user_id, sort = 'default' } = req.query;
-    let query = 'SELECT * FROM pastes WHERE 1=1';
-    const params = [];
+    try {
+        const { search, category, tag, user_id, sort = 'default' } = req.query;
+        let query = 'SELECT * FROM pastes WHERE 1=1';
+        const params = [];
 
-    if (search) {
-        query += ' AND (title LIKE ? OR content LIKE ? OR tags LIKE ?)';
-        const searchTerm = `%${search}%`;
-        params.push(searchTerm, searchTerm, searchTerm);
-    }
-    if (category && category !== 'all') {
-        query += ' AND category = ?';
-        params.push(category);
-    }
-    if (tag) {
-        query += ' AND tags LIKE ?';
-        params.push(`%${tag}%`);
-    }
-    if (user_id) {
-        query += ' AND user_id = ?';
-        params.push(user_id);
-    }
-
-    // Remove expired pastes
-    query += ' AND (expires_at IS NULL OR expires_at > datetime("now"))';
-
-    // Sorting
-    if (sort === 'views') {
-        query += ' ORDER BY views DESC, date DESC';
-    } else if (sort === 'likes') {
-        query += ' ORDER BY likes DESC, date DESC';
-    } else {
-        query += ` ORDER BY pinned DESC, 
-            CASE role WHEN 'founder' THEN 4 WHEN 'staff' THEN 3 WHEN 'manager' THEN 2 ELSE 1 END DESC, 
-            date DESC`;
-    }
-
-    db.all(query, params, (err, rows) => {
-        if (err) {
-            console.error('Error fetching pastes:', err);
-            return res.status(500).json({ error: 'Failed to fetch pastes' });
+        if (search) {
+            query += ' AND (title LIKE ? OR content LIKE ? OR tags LIKE ?)';
+            const searchTerm = `%${search}%`;
+            params.push(searchTerm, searchTerm, searchTerm);
         }
-        const pastes = rows.map(row => ({
-            ...row,
-            pinned: row.pinned === 1,
-            is_private: row.is_private === 1,
-            views: row.views || 0,
-            likes: row.likes || 0,
-            tags: row.tags ? row.tags.split(',').map(t => t.trim()) : []
-        }));
-        res.json(pastes);
-    });
+        if (category && category !== 'all') {
+            query += ' AND category = ?';
+            params.push(category);
+        }
+        if (tag) {
+            query += ' AND tags LIKE ?';
+            params.push(`%${tag}%`);
+        }
+        if (user_id) {
+            query += ' AND user_id = ?';
+            params.push(user_id);
+        }
+
+        // Remove expired pastes (only if expires_at is set and in the past)
+        query += ' AND (expires_at IS NULL OR expires_at = "" OR datetime(expires_at) > datetime("now"))';
+
+        // Sorting
+        if (sort === 'views') {
+            query += ' ORDER BY COALESCE(views, 0) DESC, date DESC';
+        } else if (sort === 'likes') {
+            query += ' ORDER BY COALESCE(likes, 0) DESC, date DESC';
+        } else {
+            query += ` ORDER BY COALESCE(pinned, 0) DESC, 
+                CASE role WHEN 'founder' THEN 4 WHEN 'staff' THEN 3 WHEN 'manager' THEN 2 ELSE 1 END DESC, 
+                date DESC`;
+        }
+
+        db.all(query, params, (err, rows) => {
+            if (err) {
+                console.error('Error fetching pastes:', err);
+                return res.status(500).json({ error: 'Failed to fetch pastes: ' + err.message });
+            }
+            const pastes = (rows || []).map(row => ({
+                ...row,
+                pinned: row.pinned === 1 || row.pinned === '1',
+                is_private: row.is_private === 1 || row.is_private === '1',
+                views: parseInt(row.views) || 0,
+                likes: parseInt(row.likes) || 0,
+                tags: row.tags ? row.tags.split(',').map(t => t.trim()).filter(t => t) : []
+            }));
+            res.json(pastes);
+        });
+    } catch (error) {
+        console.error('Error in GET /api/pastes:', error);
+        res.status(500).json({ error: 'Internal server error: ' + error.message });
+    }
 });
 
 // GET single paste with views increment
 app.get('/api/pastes/:id', (req, res) => {
-    const id = req.params.id;
-    db.get('SELECT * FROM pastes WHERE id = ?', [id], (err, row) => {
-        if (err) {
-            console.error('Error fetching paste:', err);
-            return res.status(500).json({ error: 'Failed to fetch paste' });
+    try {
+        const id = req.params.id;
+        if (!id) {
+            return res.status(400).json({ error: 'Paste ID is required' });
         }
-        if (!row) {
-            return res.status(404).json({ error: 'Paste not found' });
-        }
-        // Increment views
-        db.run('UPDATE pastes SET views = COALESCE(views, 0) + 1 WHERE id = ?', [id]);
-        const paste = {
-            ...row,
-            pinned: row.pinned === 1,
-            is_private: row.is_private === 1,
-            views: (row.views || 0) + 1,
-            likes: row.likes || 0,
-            tags: row.tags ? row.tags.split(',').map(t => t.trim()) : []
-        };
-        res.json(paste);
-    });
+        
+        db.get('SELECT * FROM pastes WHERE id = ?', [id], (err, row) => {
+            if (err) {
+                console.error('Error fetching paste:', err);
+                return res.status(500).json({ error: 'Failed to fetch paste: ' + err.message });
+            }
+            if (!row) {
+                return res.status(404).json({ error: 'Paste not found' });
+            }
+            
+            // Increment views (non-blocking)
+            db.run('UPDATE pastes SET views = COALESCE(views, 0) + 1 WHERE id = ?', [id], (updateErr) => {
+                if (updateErr) {
+                    console.error('Error updating views:', updateErr);
+                }
+            });
+            
+            const paste = {
+                ...row,
+                pinned: row.pinned === 1 || row.pinned === '1',
+                is_private: row.is_private === 1 || row.is_private === '1',
+                views: (parseInt(row.views) || 0) + 1,
+                likes: parseInt(row.likes) || 0,
+                tags: row.tags ? row.tags.split(',').map(t => t.trim()).filter(t => t) : []
+            };
+            res.json(paste);
+        });
+    } catch (error) {
+        console.error('Error in GET /api/pastes/:id:', error);
+        res.status(500).json({ error: 'Internal server error: ' + error.message });
+    }
 });
 
 // POST create new paste
-app.post('/api/pastes', upload.single('image'), (req, res) => {
-    const { id, title, content, category, date, user_id, role, tags, language, is_private, expires_at } = req.body;
-    const imageUrl = req.file ? `/uploads/${req.file.filename}` : null;
+app.post('/api/pastes', (req, res) => {
+    try {
+        const { id, title, content, category, date, user_id, role, tags, language, is_private, expires_at } = req.body;
 
-    if (!content) {
-        return res.status(400).json({ error: 'Content is required' });
-    }
-
-    const tagsStr = Array.isArray(tags) ? tags.join(',') : (tags || '');
-
-    db.run(
-        'INSERT INTO pastes (id, title, content, category, date, user_id, role, pinned, tags, language, is_private, expires_at, image_url) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
-        [id, title || 'Untitled', content, category || 'Uncategorized', date || new Date().toISOString(), 
-         user_id || null, role || 'user', 0, tagsStr, language || null, is_private ? 1 : 0, expires_at || null, imageUrl],
-        function(err) {
-            if (err) {
-                console.error('Error creating paste:', err);
-                return res.status(500).json({ error: 'Failed to create paste' });
-            }
-            res.status(201).json({ 
-                id, 
-                title: title || 'Untitled', 
-                content, 
-                category: category || 'Uncategorized', 
-                date: date || new Date().toISOString(),
-                user_id: user_id || null,
-                role: role || 'user',
-                pinned: false,
-                views: 0,
-                likes: 0,
-                tags: tagsStr.split(',').map(t => t.trim()),
-                image_url: imageUrl
-            });
+        if (!content) {
+            return res.status(400).json({ error: 'Content is required' });
         }
-    );
+
+        if (!id) {
+            return res.status(400).json({ error: 'ID is required' });
+        }
+
+        const tagsStr = Array.isArray(tags) ? tags.join(',') : (tags || '');
+
+        db.run(
+            'INSERT INTO pastes (id, title, content, category, date, user_id, role, pinned, tags, language, is_private, expires_at, views, likes) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
+            [id, title || 'Untitled', content, category || 'Uncategorized', date || new Date().toISOString(), 
+             user_id || null, role || 'user', 0, tagsStr, language || null, is_private ? 1 : 0, expires_at || null, 0, 0],
+            function(err) {
+                if (err) {
+                    console.error('Error creating paste:', err);
+                    if (err.message.includes('UNIQUE constraint')) {
+                        return res.status(409).json({ error: 'Paste ID already exists' });
+                    }
+                    return res.status(500).json({ error: 'Failed to create paste: ' + err.message });
+                }
+                res.status(201).json({ 
+                    id, 
+                    title: title || 'Untitled', 
+                    content, 
+                    category: category || 'Uncategorized', 
+                    date: date || new Date().toISOString(),
+                    user_id: user_id || null,
+                    role: role || 'user',
+                    pinned: false,
+                    views: 0,
+                    likes: 0,
+                    tags: tagsStr ? tagsStr.split(',').map(t => t.trim()).filter(t => t) : [],
+                    image_url: null
+                });
+            }
+        );
+    } catch (error) {
+        console.error('Error in POST /api/pastes:', error);
+        res.status(500).json({ error: 'Internal server error: ' + error.message });
+    }
 });
 
 // DELETE paste
 app.delete('/api/pastes/:id', (req, res) => {
-    const id = req.params.id;
-    db.run('DELETE FROM pastes WHERE id = ?', [id], function(err) {
-        if (err) {
-            console.error('Error deleting paste:', err);
-            return res.status(500).json({ error: 'Failed to delete paste' });
+    try {
+        const id = req.params.id;
+        if (!id) {
+            return res.status(400).json({ error: 'Paste ID is required' });
         }
-        if (this.changes === 0) {
-            return res.status(404).json({ error: 'Paste not found' });
-        }
-        res.json({ message: 'Paste deleted successfully' });
-    });
+        
+        db.run('DELETE FROM pastes WHERE id = ?', [id], function(err) {
+            if (err) {
+                console.error('Error deleting paste:', err);
+                return res.status(500).json({ error: 'Failed to delete paste: ' + err.message });
+            }
+            if (this.changes === 0) {
+                return res.status(404).json({ error: 'Paste not found' });
+            }
+            res.json({ message: 'Paste deleted successfully' });
+        });
+    } catch (error) {
+        console.error('Error in DELETE /api/pastes/:id:', error);
+        res.status(500).json({ error: 'Internal server error: ' + error.message });
+    }
 });
 
 // PIN/UNPIN paste
@@ -585,6 +643,7 @@ app.listen(PORT, () => {
     console.log(`🚀 Server running on http://localhost:${PORT}`);
     console.log(`📡 API available at http://localhost:${PORT}/api/pastes`);
     console.log(`💾 Database: ${DB_PATH}`);
+    console.log(`✅ Server ready! Start React app with: cd frontend && npm start`);
 });
 
 // Graceful shutdown
