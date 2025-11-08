@@ -4,49 +4,70 @@ const path = require('path');
 const cors = require('cors');
 const fs = require('fs');
 const crypto = require('crypto');
+const multer = require('multer');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
 const DB_PATH = path.join(__dirname, 'pastes.db');
 const USERS_FILE = path.join(__dirname, 'users.json');
 const BACKUP_DIR = path.join(__dirname, 'backups');
+const UPLOADS_DIR = path.join(__dirname, 'uploads');
 
-// Ensure backup directory exists
-if (!fs.existsSync(BACKUP_DIR)) {
-    fs.mkdirSync(BACKUP_DIR, { recursive: true });
-}
+// Ensure directories exist
+[BACKUP_DIR, UPLOADS_DIR].forEach(dir => {
+    if (!fs.existsSync(dir)) {
+        fs.mkdirSync(dir, { recursive: true });
+    }
+});
 
 // Initialize users.json if it doesn't exist
 if (!fs.existsSync(USERS_FILE)) {
-    const defaultUsers = {
-        users: []
-    };
-    fs.writeFileSync(USERS_FILE, JSON.stringify(defaultUsers, null, 2));
+    fs.writeFileSync(USERS_FILE, JSON.stringify({ users: [] }, null, 2));
 }
 
-// Simple password hashing (using crypto for basic security)
+// Multer configuration for file uploads
+const storage = multer.diskStorage({
+    destination: (req, file, cb) => {
+        cb(null, UPLOADS_DIR);
+    },
+    filename: (req, file, cb) => {
+        const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
+        cb(null, uniqueSuffix + path.extname(file.originalname));
+    }
+});
+const upload = multer({ 
+    storage: storage,
+    limits: { fileSize: 10 * 1024 * 1024 }, // 10MB limit
+    fileFilter: (req, file, cb) => {
+        const allowedTypes = /jpeg|jpg|png|gif|webp|svg/;
+        const extname = allowedTypes.test(path.extname(file.originalname).toLowerCase());
+        const mimetype = allowedTypes.test(file.mimetype);
+        if (mimetype && extname) {
+            return cb(null, true);
+        }
+        cb(new Error('Only image files are allowed'));
+    }
+});
+
+// Password hashing
 function hashPassword(password) {
     return crypto.createHash('sha256').update(password + 'darkipedia_salt_2024').digest('hex');
 }
 
-// Load users from JSON
+// Load/save users
 function loadUsers() {
     try {
-        const data = fs.readFileSync(USERS_FILE, 'utf8');
-        return JSON.parse(data);
+        return JSON.parse(fs.readFileSync(USERS_FILE, 'utf8'));
     } catch (err) {
         return { users: [] };
     }
 }
 
-// Save users to JSON
 function saveUsers(usersData) {
     try {
         fs.writeFileSync(USERS_FILE, JSON.stringify(usersData, null, 2));
-        // Create backup
         const backupFile = path.join(BACKUP_DIR, `users_backup_${Date.now()}.json`);
         fs.writeFileSync(backupFile, JSON.stringify(usersData, null, 2));
-        // Keep only last 10 backups
         const backups = fs.readdirSync(BACKUP_DIR).filter(f => f.startsWith('users_backup_')).sort().reverse();
         backups.slice(10).forEach(f => fs.unlinkSync(path.join(BACKUP_DIR, f)));
         return true;
@@ -56,18 +77,37 @@ function saveUsers(usersData) {
     }
 }
 
-// Middleware
-app.use(cors());
-app.use(express.json());
-app.use(express.static(__dirname)); // Serve static files
+// Enhanced middleware
+app.use(cors({
+    origin: '*',
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization']
+}));
+app.use(express.json({ limit: '50mb' }));
+app.use(express.urlencoded({ extended: true, limit: '50mb' }));
+app.use('/uploads', express.static(UPLOADS_DIR));
+app.use(express.static(__dirname));
 
-// Initialize database
+// Error handling
+app.use((err, req, res, next) => {
+    console.error('Error:', err);
+    res.status(500).json({ error: 'Internal server error', details: err.message });
+});
+
+// Request logging
+app.use((req, res, next) => {
+    console.log(`${new Date().toISOString()} - ${req.method} ${req.path}`);
+    next();
+});
+
+// Database initialization
 const db = new sqlite3.Database(DB_PATH, (err) => {
     if (err) {
         console.error('Error opening database:', err.message);
     } else {
         console.log('Connected to SQLite database');
-        // Create pastes table with new fields
+        
+        // Enhanced pastes table
         db.run(`CREATE TABLE IF NOT EXISTS pastes (
             id TEXT PRIMARY KEY,
             title TEXT,
@@ -76,29 +116,64 @@ const db = new sqlite3.Database(DB_PATH, (err) => {
             date TEXT NOT NULL,
             user_id TEXT,
             role TEXT DEFAULT 'user',
-            pinned INTEGER DEFAULT 0
+            pinned INTEGER DEFAULT 0,
+            views INTEGER DEFAULT 0,
+            likes INTEGER DEFAULT 0,
+            tags TEXT,
+            language TEXT,
+            is_private INTEGER DEFAULT 0,
+            expires_at TEXT,
+            image_url TEXT
         )`, (err) => {
             if (err) {
                 console.error('Error creating pastes table:', err.message);
             } else {
                 console.log('Pastes table ready');
-                // Try to add new columns (will fail if they exist, which is fine)
-                db.run(`ALTER TABLE pastes ADD COLUMN role TEXT DEFAULT 'user'`, () => {});
-                db.run(`ALTER TABLE pastes ADD COLUMN user_id TEXT`, () => {});
-                db.run(`ALTER TABLE pastes ADD COLUMN pinned INTEGER DEFAULT 0`, () => {});
-                // Check if old manager column exists and migrate
-                db.all(`PRAGMA table_info(pastes)`, [], (err, columns) => {
-                    if (!err && columns) {
-                        const hasManager = columns.some(col => col.name === 'manager');
-                        if (hasManager) {
-                            db.run(`UPDATE pastes SET role = 'manager' WHERE manager = 1 AND (role IS NULL OR role = 'user')`, () => {});
-                        }
-                    }
+                // Add new columns
+                ['role', 'user_id', 'pinned', 'views', 'likes', 'tags', 'language', 'is_private', 'expires_at', 'image_url'].forEach(col => {
+                    db.run(`ALTER TABLE pastes ADD COLUMN ${col} TEXT DEFAULT NULL`, () => {});
                 });
             }
         });
 
-        // Create users table for session management
+        // Comments table
+        db.run(`CREATE TABLE IF NOT EXISTS comments (
+            id TEXT PRIMARY KEY,
+            paste_id TEXT NOT NULL,
+            user_id TEXT,
+            username TEXT,
+            content TEXT NOT NULL,
+            date TEXT NOT NULL,
+            FOREIGN KEY (paste_id) REFERENCES pastes(id) ON DELETE CASCADE
+        )`, (err) => {
+            if (err) console.error('Error creating comments table:', err.message);
+        });
+
+        // Likes table
+        db.run(`CREATE TABLE IF NOT EXISTS likes (
+            id TEXT PRIMARY KEY,
+            paste_id TEXT NOT NULL,
+            user_id TEXT NOT NULL,
+            date TEXT NOT NULL,
+            UNIQUE(paste_id, user_id),
+            FOREIGN KEY (paste_id) REFERENCES pastes(id) ON DELETE CASCADE
+        )`, (err) => {
+            if (err) console.error('Error creating likes table:', err.message);
+        });
+
+        // User profiles table
+        db.run(`CREATE TABLE IF NOT EXISTS user_profiles (
+            user_id TEXT PRIMARY KEY,
+            bio TEXT,
+            avatar TEXT,
+            theme TEXT DEFAULT 'dark',
+            created_at TEXT NOT NULL,
+            last_seen TEXT
+        )`, (err) => {
+            if (err) console.error('Error creating user_profiles table:', err.message);
+        });
+
+        // Users table
         db.run(`CREATE TABLE IF NOT EXISTS users (
             id TEXT PRIMARY KEY,
             username TEXT UNIQUE NOT NULL,
@@ -106,52 +181,75 @@ const db = new sqlite3.Database(DB_PATH, (err) => {
             role TEXT DEFAULT 'user',
             created_at TEXT NOT NULL
         )`, (err) => {
-            if (err) {
-                console.error('Error creating users table:', err.message);
-            } else {
-                console.log('Users table ready');
-            }
+            if (err) console.error('Error creating users table:', err.message);
         });
     }
 });
 
-// Helper function to get role hierarchy (higher number = higher priority)
+// Helper function to get role priority
 function getRolePriority(role) {
-    const priorities = {
-        'founder': 4,
-        'staff': 3,
-        'manager': 2,
-        'user': 1
-    };
+    const priorities = { 'founder': 4, 'staff': 3, 'manager': 2, 'user': 1 };
     return priorities[role] || 0;
 }
 
 // API Routes
 
-// GET all pastes (sorted: pinned founder > pinned staff > pinned manager > regular by role > date)
+// GET all pastes (enhanced with filtering and sorting)
 app.get('/api/pastes', (req, res) => {
-    db.all(`SELECT * FROM pastes ORDER BY 
-        pinned DESC,
-        CASE role
-            WHEN 'founder' THEN 4
-            WHEN 'staff' THEN 3
-            WHEN 'manager' THEN 2
-            ELSE 1
-        END DESC,
-        date DESC`, [], (err, rows) => {
+    const { search, category, tag, user_id, sort = 'default' } = req.query;
+    let query = 'SELECT * FROM pastes WHERE 1=1';
+    const params = [];
+
+    if (search) {
+        query += ' AND (title LIKE ? OR content LIKE ? OR tags LIKE ?)';
+        const searchTerm = `%${search}%`;
+        params.push(searchTerm, searchTerm, searchTerm);
+    }
+    if (category && category !== 'all') {
+        query += ' AND category = ?';
+        params.push(category);
+    }
+    if (tag) {
+        query += ' AND tags LIKE ?';
+        params.push(`%${tag}%`);
+    }
+    if (user_id) {
+        query += ' AND user_id = ?';
+        params.push(user_id);
+    }
+
+    // Remove expired pastes
+    query += ' AND (expires_at IS NULL OR expires_at > datetime("now"))';
+
+    // Sorting
+    if (sort === 'views') {
+        query += ' ORDER BY views DESC, date DESC';
+    } else if (sort === 'likes') {
+        query += ' ORDER BY likes DESC, date DESC';
+    } else {
+        query += ` ORDER BY pinned DESC, 
+            CASE role WHEN 'founder' THEN 4 WHEN 'staff' THEN 3 WHEN 'manager' THEN 2 ELSE 1 END DESC, 
+            date DESC`;
+    }
+
+    db.all(query, params, (err, rows) => {
         if (err) {
             console.error('Error fetching pastes:', err);
             return res.status(500).json({ error: 'Failed to fetch pastes' });
         }
         const pastes = rows.map(row => ({
             ...row,
-            pinned: row.pinned === 1
+            pinned: row.pinned === 1,
+            is_private: row.is_private === 1,
+            views: row.views || 0,
+            likes: row.likes || 0,
+            tags: row.tags ? row.tags.split(',').map(t => t.trim()) : []
         }));
         res.json(pastes);
     });
 });
 
-// GET single paste by id
+// GET single paste with views increment
 app.get('/api/pastes/:id', (req, res) => {
     const id = req.params.id;
     db.get('SELECT * FROM pastes WHERE id = ?', [id], (err, row) => {
@@ -162,25 +260,35 @@ app.get('/api/pastes/:id', (req, res) => {
         if (!row) {
             return res.status(404).json({ error: 'Paste not found' });
         }
+        // Increment views
+        db.run('UPDATE pastes SET views = COALESCE(views, 0) + 1 WHERE id = ?', [id]);
         const paste = {
             ...row,
-            pinned: row.pinned === 1
+            pinned: row.pinned === 1,
+            is_private: row.is_private === 1,
+            views: (row.views || 0) + 1,
+            likes: row.likes || 0,
+            tags: row.tags ? row.tags.split(',').map(t => t.trim()) : []
         };
         res.json(paste);
     });
 });
 
 // POST create new paste
-app.post('/api/pastes', (req, res) => {
-    const { id, title, content, category, date, user_id, role } = req.body;
-    
+app.post('/api/pastes', upload.single('image'), (req, res) => {
+    const { id, title, content, category, date, user_id, role, tags, language, is_private, expires_at } = req.body;
+    const imageUrl = req.file ? `/uploads/${req.file.filename}` : null;
+
     if (!content) {
         return res.status(400).json({ error: 'Content is required' });
     }
-    
+
+    const tagsStr = Array.isArray(tags) ? tags.join(',') : (tags || '');
+
     db.run(
-        'INSERT INTO pastes (id, title, content, category, date, user_id, role, pinned) VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
-        [id, title || 'Untitled', content, category || 'Uncategorized', date || new Date().toISOString(), user_id || null, role || 'user', 0],
+        'INSERT INTO pastes (id, title, content, category, date, user_id, role, pinned, tags, language, is_private, expires_at, image_url) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
+        [id, title || 'Untitled', content, category || 'Uncategorized', date || new Date().toISOString(), 
+         user_id || null, role || 'user', 0, tagsStr, language || null, is_private ? 1 : 0, expires_at || null, imageUrl],
         function(err) {
             if (err) {
                 console.error('Error creating paste:', err);
@@ -194,13 +302,17 @@ app.post('/api/pastes', (req, res) => {
                 date: date || new Date().toISOString(),
                 user_id: user_id || null,
                 role: role || 'user',
-                pinned: false
+                pinned: false,
+                views: 0,
+                likes: 0,
+                tags: tagsStr.split(',').map(t => t.trim()),
+                image_url: imageUrl
             });
         }
     );
 });
 
-// DELETE paste by id
+// DELETE paste
 app.delete('/api/pastes/:id', (req, res) => {
     const id = req.params.id;
     db.run('DELETE FROM pastes WHERE id = ?', [id], function(err) {
@@ -215,11 +327,10 @@ app.delete('/api/pastes/:id', (req, res) => {
     });
 });
 
-// PIN/UNPIN paste (founder, staff, manager only)
+// PIN/UNPIN paste
 app.post('/api/pastes/:id/pin', (req, res) => {
     const id = req.params.id;
-    const { pinned } = req.body;
-    const { role } = req.body; // Role from authenticated user
+    const { pinned, role } = req.body;
     
     if (!['founder', 'staff', 'manager'].includes(role)) {
         return res.status(403).json({ error: 'Only founder, staff, and managers can pin posts' });
@@ -237,69 +348,104 @@ app.post('/api/pastes/:id/pin', (req, res) => {
     });
 });
 
-// AUTHENTICATION ROUTES
+// LIKE/UNLIKE paste
+app.post('/api/pastes/:id/like', (req, res) => {
+    const id = req.params.id;
+    const { user_id } = req.body;
+    
+    if (!user_id) {
+        return res.status(400).json({ error: 'User ID is required' });
+    }
 
-// POST signup
-app.post('/api/auth/signup', (req, res) => {
-    const { username, password } = req.body;
-    
-    if (!username || !password) {
-        return res.status(400).json({ error: 'Username and password are required' });
-    }
-    
-    if (password.length < 8) {
-        return res.status(400).json({ error: 'Password must be at least 8 characters' });
-    }
-    
-    const usersData = loadUsers();
-    
-    // Check if username exists
-    if (usersData.users.find(u => u.username.toLowerCase() === username.toLowerCase())) {
-        return res.status(400).json({ error: 'Username already exists' });
-    }
-    
-    const userId = crypto.randomBytes(16).toString('hex');
-    const passwordHash = hashPassword(password);
-    const newUser = {
-        id: userId,
-        username: username,
-        password_hash: passwordHash,
-        role: 'user',
-        created_at: new Date().toISOString()
-    };
-    
-    usersData.users.push(newUser);
-    
-    if (saveUsers(usersData)) {
-        // Also save to database
-        db.run('INSERT INTO users (id, username, password_hash, role, created_at) VALUES (?, ?, ?, ?, ?)',
-            [userId, username, passwordHash, 'user', newUser.created_at], (err) => {
-            if (err) {
-                console.error('Error saving user to database:', err);
-            }
-        });
-        
-        res.status(201).json({ message: 'User created successfully', user: { id: userId, username, role: 'user' } });
-    } else {
-        res.status(500).json({ error: 'Failed to create user' });
-    }
+    // Check if already liked
+    db.get('SELECT * FROM likes WHERE paste_id = ? AND user_id = ?', [id, user_id], (err, like) => {
+        if (err) {
+            return res.status(500).json({ error: 'Failed to check like status' });
+        }
+
+        if (like) {
+            // Unlike
+            db.run('DELETE FROM likes WHERE paste_id = ? AND user_id = ?', [id, user_id], (err) => {
+                if (err) return res.status(500).json({ error: 'Failed to unlike' });
+                db.run('UPDATE pastes SET likes = COALESCE(likes, 0) - 1 WHERE id = ?', [id]);
+                res.json({ liked: false, message: 'Unliked successfully' });
+            });
+        } else {
+            // Like
+            const likeId = crypto.randomBytes(16).toString('hex');
+            db.run('INSERT INTO likes (id, paste_id, user_id, date) VALUES (?, ?, ?, ?)', 
+                [likeId, id, user_id, new Date().toISOString()], (err) => {
+                if (err) return res.status(500).json({ error: 'Failed to like' });
+                db.run('UPDATE pastes SET likes = COALESCE(likes, 0) + 1 WHERE id = ?', [id]);
+                res.json({ liked: true, message: 'Liked successfully' });
+            });
+        }
+    });
 });
 
-// GET check if user requires 2FA
+// GET comments for a paste
+app.get('/api/pastes/:id/comments', (req, res) => {
+    const id = req.params.id;
+    db.all('SELECT * FROM comments WHERE paste_id = ? ORDER BY date ASC', [id], (err, rows) => {
+        if (err) {
+            return res.status(500).json({ error: 'Failed to fetch comments' });
+        }
+        res.json(rows);
+    });
+});
+
+// POST comment on a paste
+app.post('/api/pastes/:id/comments', (req, res) => {
+    const id = req.params.id;
+    const { user_id, username, content } = req.body;
+    
+    if (!content) {
+        return res.status(400).json({ error: 'Content is required' });
+    }
+
+    const commentId = crypto.randomBytes(16).toString('hex');
+    db.run('INSERT INTO comments (id, paste_id, user_id, username, content, date) VALUES (?, ?, ?, ?, ?, ?)',
+        [commentId, id, user_id || null, username || 'Anonymous', content, new Date().toISOString()],
+        function(err) {
+            if (err) {
+                return res.status(500).json({ error: 'Failed to create comment' });
+            }
+            res.status(201).json({ 
+                id: commentId, 
+                paste_id: id, 
+                user_id, 
+                username: username || 'Anonymous', 
+                content, 
+                date: new Date().toISOString() 
+            });
+        }
+    );
+});
+
+// DELETE comment
+app.delete('/api/comments/:id', (req, res) => {
+    const id = req.params.id;
+    db.run('DELETE FROM comments WHERE id = ?', [id], function(err) {
+        if (err) {
+            return res.status(500).json({ error: 'Failed to delete comment' });
+        }
+        res.json({ message: 'Comment deleted successfully' });
+    });
+});
+
+// AUTHENTICATION ROUTES
+
+// GET check 2FA
 app.get('/api/auth/check-2fa', (req, res) => {
     const username = req.query.username;
     if (!username) {
         return res.json({ requires2FA: false });
     }
-    
     const usersData = loadUsers();
     const user = usersData.users.find(u => u.username.toLowerCase() === username.toLowerCase());
-    
     if (!user) {
         return res.json({ requires2FA: false });
     }
-    
-    // Check if user has a 2FA code (founder, staff, manager roles)
     const requires2FA = user.fa_code && ['founder', 'staff', 'manager'].includes(user.role);
     res.json({ requires2FA });
 });
@@ -325,7 +471,6 @@ app.post('/api/auth/login', (req, res) => {
         return res.status(401).json({ error: 'Invalid username or password' });
     }
     
-    // Check 2FA for special roles
     if (user.fa_code && ['founder', 'staff', 'manager'].includes(user.role)) {
         if (!faCode || faCode.trim() !== user.fa_code) {
             return res.status(401).json({ 
@@ -334,6 +479,10 @@ app.post('/api/auth/login', (req, res) => {
             });
         }
     }
+    
+    // Update last seen
+    db.run('UPDATE user_profiles SET last_seen = ? WHERE user_id = ?', 
+        [new Date().toISOString(), user.id], () => {});
     
     res.json({ 
         message: 'Login successful',
@@ -345,28 +494,77 @@ app.post('/api/auth/login', (req, res) => {
     });
 });
 
-// GET users (for backup/management)
-app.get('/api/users', (req, res) => {
+// POST signup
+app.post('/api/auth/signup', (req, res) => {
+    const { username, password } = req.body;
+    
+    if (!username || !password) {
+        return res.status(400).json({ error: 'Username and password are required' });
+    }
+    
+    if (password.length < 8) {
+        return res.status(400).json({ error: 'Password must be at least 8 characters' });
+    }
+    
     const usersData = loadUsers();
-    const safeUsers = usersData.users.map(u => ({
-        id: u.id,
-        username: u.username,
-        role: u.role,
-        created_at: u.created_at
-    }));
-    res.json({ users: safeUsers });
+    
+    if (usersData.users.find(u => u.username.toLowerCase() === username.toLowerCase())) {
+        return res.status(400).json({ error: 'Username already exists' });
+    }
+    
+    const userId = crypto.randomBytes(16).toString('hex');
+    const passwordHash = hashPassword(password);
+    const newUser = {
+        id: userId,
+        username: username,
+        password_hash: passwordHash,
+        role: 'user',
+        created_at: new Date().toISOString()
+    };
+    
+    usersData.users.push(newUser);
+    
+    if (saveUsers(usersData)) {
+        db.run('INSERT INTO users (id, username, password_hash, role, created_at) VALUES (?, ?, ?, ?, ?)',
+            [userId, username, passwordHash, 'user', newUser.created_at], (err) => {
+            if (err) console.error('Error saving user to database:', err);
+        });
+        
+        // Create user profile
+        db.run('INSERT INTO user_profiles (user_id, created_at, last_seen) VALUES (?, ?, ?)',
+            [userId, new Date().toISOString(), new Date().toISOString()], () => {});
+        
+        res.status(201).json({ message: 'User created successfully', user: { id: userId, username, role: 'user' } });
+    } else {
+        res.status(500).json({ error: 'Failed to create user' });
+    }
 });
 
-// Backup posts to JSON
-app.post('/api/backup/posts', (req, res) => {
-    db.all('SELECT * FROM pastes', [], (err, rows) => {
+// GET user profile
+app.get('/api/users/:id', (req, res) => {
+    const id = req.params.id;
+    db.get('SELECT * FROM user_profiles WHERE user_id = ?', [id], (err, profile) => {
         if (err) {
-            return res.status(500).json({ error: 'Failed to backup posts' });
+            return res.status(500).json({ error: 'Failed to fetch profile' });
         }
-        const backupFile = path.join(BACKUP_DIR, `posts_backup_${Date.now()}.json`);
-        fs.writeFileSync(backupFile, JSON.stringify(rows, null, 2));
-        res.json({ message: 'Backup created successfully', file: backupFile });
+        res.json(profile || { user_id: id, bio: '', avatar: '', theme: 'dark' });
     });
+});
+
+// UPDATE user profile
+app.put('/api/users/:id', (req, res) => {
+    const id = req.params.id;
+    const { bio, avatar, theme } = req.body;
+    
+    db.run('INSERT OR REPLACE INTO user_profiles (user_id, bio, avatar, theme, last_seen) VALUES (?, ?, ?, ?, ?)',
+        [id, bio || '', avatar || '', theme || 'dark', new Date().toISOString()],
+        function(err) {
+            if (err) {
+                return res.status(500).json({ error: 'Failed to update profile' });
+            }
+            res.json({ message: 'Profile updated successfully' });
+        }
+    );
 });
 
 // Auto-backup every hour
@@ -376,17 +574,17 @@ setInterval(() => {
             const backupFile = path.join(BACKUP_DIR, `posts_backup_${Date.now()}.json`);
             fs.writeFileSync(backupFile, JSON.stringify(rows, null, 2));
             console.log(`Auto-backup created: ${backupFile}`);
-            // Keep only last 24 backups (24 hours)
             const backups = fs.readdirSync(BACKUP_DIR).filter(f => f.startsWith('posts_backup_')).sort().reverse();
             backups.slice(24).forEach(f => fs.unlinkSync(path.join(BACKUP_DIR, f)));
         }
     });
-}, 3600000); // 1 hour
+}, 3600000);
 
 // Start server
 app.listen(PORT, () => {
-    console.log(`Server running on http://localhost:${PORT}`);
-    console.log(`API available at http://localhost:${PORT}/api/pastes`);
+    console.log(`🚀 Server running on http://localhost:${PORT}`);
+    console.log(`📡 API available at http://localhost:${PORT}/api/pastes`);
+    console.log(`💾 Database: ${DB_PATH}`);
 });
 
 // Graceful shutdown
@@ -400,3 +598,4 @@ process.on('SIGINT', () => {
         process.exit(0);
     });
 });
+
