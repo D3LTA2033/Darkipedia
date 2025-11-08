@@ -12,7 +12,7 @@
         }
         body {
             background: #0a0a0a;
-            color: #00ff00;
+            color: #ffffff;
             font-family: 'Courier New', monospace;
             display: flex;
             justify-content: center;
@@ -28,12 +28,14 @@
         h1 {
             font-size: 2.5em;
             margin-bottom: 1em;
-            text-shadow: 0 0 10px #00ff00;
+            color: #ff0000;
+            text-shadow: 0 0 10px #ff0000;
             letter-spacing: 0.1em;
+            font-weight: bold;
         }
         .loader {
             border: 3px solid #1a1a1a;
-            border-top: 3px solid #00ff00;
+            border-top: 3px solid #ff0000;
             border-radius: 50%;
             width: 50px;
             height: 50px;
@@ -47,23 +49,27 @@
         .captcha-box {
             margin-top: 2em;
             padding: 2em;
-            border: 2px solid #00ff00;
-            background: #0f0f0f;
-            box-shadow: 0 0 20px #00ff0040;
+            border: 2px solid #ff0000;
+            background: #1a1a1a;
+            box-shadow: 0 0 20px #ff000040;
+        }
+        .captcha-box p {
+            color: #ffffff;
+            margin-bottom: 10px;
         }
         .captcha-code {
             font-size: 3em;
             font-weight: bold;
-            color: #00ff00;
-            text-shadow: 0 0 10px #00ff00;
+            color: #ff0000;
+            text-shadow: 0 0 10px #ff0000;
             margin: 1em 0;
             letter-spacing: 0.2em;
             user-select: none;
         }
         .captcha-input {
-            background: #1a1a1a;
-            border: 2px solid #00ff00;
-            color: #00ff00;
+            background: #0a0a0a;
+            border: 2px solid #333333;
+            color: #ffffff;
             font-size: 1.5em;
             padding: 0.5em;
             text-align: center;
@@ -71,13 +77,15 @@
             width: 100%;
             margin: 1em 0;
             outline: none;
+            letter-spacing: 0.2em;
         }
         .captcha-input:focus {
-            box-shadow: 0 0 10px #00ff00;
+            border-color: #ff0000;
+            box-shadow: 0 0 10px #ff0000;
         }
         .captcha-btn {
-            background: #00ff00;
-            color: #0a0a0a;
+            background: #ff0000;
+            color: #ffffff;
             border: none;
             padding: 0.7em 2em;
             font-size: 1.2em;
@@ -88,7 +96,8 @@
             transition: background 0.3s;
         }
         .captcha-btn:hover {
-            background: #00cc00;
+            background: #cc0000;
+            box-shadow: 0 0 10px #ff0000;
         }
         .error {
             color: #ff0000;
