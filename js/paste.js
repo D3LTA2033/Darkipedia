@@ -31,7 +31,13 @@ document.addEventListener('DOMContentLoaded', () => {
         if (input && typeof input.focus === 'function') input.focus();
     }
 
-    const API_BASE = window.location.origin + '/api';
+    // Fix API base URL
+    let API_BASE;
+    if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
+        API_BASE = 'http://localhost:3000/api';
+    } else {
+        API_BASE = window.location.origin + '/api';
+    }
     
     // Legacy functions kept for compatibility but not used for storage
     function getPastes() {
@@ -120,6 +126,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // Save to API
         try {
+            console.log('Saving paste:', paste);
             const response = await fetch(`${API_BASE}/pastes`, {
                 method: 'POST',
                 headers: {
@@ -128,15 +135,21 @@ document.addEventListener('DOMContentLoaded', () => {
                 body: JSON.stringify(paste)
             });
 
+            const responseData = await response.json().catch(() => ({ error: 'Unknown error' }));
+
             if (!response.ok) {
-                throw new Error('Failed to save paste');
+                throw new Error(responseData.error || `HTTP ${response.status}: Failed to save paste`);
             }
 
+            console.log('Paste saved successfully:', responseData);
+            
             // Redirect to home page after successful save
-            window.location.href = '../index.html';
+            setTimeout(() => {
+                window.location.href = '../index.html';
+            }, 500);
         } catch (error) {
             console.error('Error saving paste:', error);
-            showError('Failed to save paste. Please check your connection and try again.');
+            showError(`Failed to save paste: ${error.message}. Make sure the server is running: npm start`);
             if (submitBtn) {
                 submitBtn.disabled = false;
                 submitBtn.textContent = '🚀 Publish';
