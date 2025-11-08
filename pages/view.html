@@ -479,18 +479,36 @@
 
             // Load paste from API
             try {
-                const API_BASE = window.location.origin + '/api';
-                const response = await fetch(`${API_BASE}/pastes/${encodeURIComponent(id)}`);
+                // Fix API base URL
+                let API_BASE;
+                if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
+                    API_BASE = 'http://localhost:3000/api';
+                } else {
+                    API_BASE = window.location.origin + '/api';
+                }
+                
+                const response = await fetch(`${API_BASE}/pastes/${encodeURIComponent(id)}`, {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                });
                 
                 if (!response.ok) {
                     if (response.status === 404) {
                         hideEverythingNotFound();
                         return;
                     }
-                    throw new Error('Failed to fetch paste');
+                    const errorData = await response.json().catch(() => ({ error: 'Unknown error' }));
+                    throw new Error(errorData.error || `HTTP ${response.status}`);
                 }
                 
                 const paste = await response.json();
+                if (!paste || !paste.id) {
+                    hideEverythingNotFound();
+                    return;
+                }
+                
                 metaBar.style.display = '';
                 contentArt.style.display = '';
                 notFoundMsg.style.display = 'none';
@@ -499,28 +517,34 @@
                 // Add role badge if paste has a role
                 if (paste.role && paste.role !== 'user') {
                     const titleEl = document.getElementById('paste-title');
-                    const roleBadge = document.createElement('span');
-                    roleBadge.className = 'role-badge role-' + paste.role;
-                    roleBadge.textContent = paste.role.toUpperCase();
-                    roleBadge.style.cssText = 'margin-left: 10px; padding: 3px 8px; border: 1px solid; font-size: 11px; font-weight: bold;';
-                    if (paste.role === 'founder') {
-                        roleBadge.style.color = '#ff0000';
-                        roleBadge.style.borderColor = '#ff0000';
-                        roleBadge.style.background = '#1a0000';
-                    } else if (paste.role === 'staff') {
-                        roleBadge.style.color = '#ffff00';
-                        roleBadge.style.borderColor = '#ffff00';
-                        roleBadge.style.background = '#1a1a00';
-                    } else if (paste.role === 'manager') {
-                        roleBadge.style.color = '#ff8800';
-                        roleBadge.style.borderColor = '#ff8800';
-                        roleBadge.style.background = '#1a0a00';
+                    if (titleEl) {
+                        const roleBadge = document.createElement('span');
+                        roleBadge.className = 'role-badge role-' + paste.role;
+                        roleBadge.textContent = paste.role.toUpperCase();
+                        roleBadge.style.cssText = 'margin-left: 10px; padding: 3px 8px; border: 1px solid; font-size: 11px; font-weight: bold;';
+                        if (paste.role === 'founder') {
+                            roleBadge.style.color = '#ff0000';
+                            roleBadge.style.borderColor = '#ff0000';
+                            roleBadge.style.background = '#1a0000';
+                        } else if (paste.role === 'staff') {
+                            roleBadge.style.color = '#ffff00';
+                            roleBadge.style.borderColor = '#ffff00';
+                            roleBadge.style.background = '#1a1a00';
+                        } else if (paste.role === 'manager') {
+                            roleBadge.style.color = '#ff8800';
+                            roleBadge.style.borderColor = '#ff8800';
+                            roleBadge.style.background = '#1a0a00';
+                        }
+                        titleEl.appendChild(roleBadge);
                     }
-                    titleEl.appendChild(roleBadge);
                 }
             } catch (error) {
                 console.error('Error loading paste:', error);
                 hideEverythingNotFound();
+                const notFoundMsg = document.getElementById('not-found-message');
+                if (notFoundMsg) {
+                    notFoundMsg.innerHTML = `Error loading paste: ${error.message}. Make sure the server is running: npm start`;
+                }
             }
         })();
     </script>
