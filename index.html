@@ -459,29 +459,45 @@
             }
             
             try {
+                // Check if server is accessible
+                // Create timeout controller
+                const controller = new AbortController();
+                const timeoutId = setTimeout(() => controller.abort(), 10000);
+                
                 const response = await fetch(`${API_BASE}/auth/login`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ username, password, faCode: faCode || null })
+                    body: JSON.stringify({ username, password, faCode: faCode || null }),
+                    signal: controller.signal
                 });
                 
-                const data = await response.json();
+                clearTimeout(timeoutId);
                 
-                if (response.ok) {
-                    currentUser = data.user;
-                    localStorage.setItem('currentUser', JSON.stringify(currentUser));
-                    updateUserUI();
-                    hideLoginModal();
-                    loadPastes();
-                } else {
-                    error.textContent = data.error || 'Login failed';
+                if (!response.ok) {
+                    const data = await response.json().catch(() => ({ error: 'Server error' }));
+                    error.textContent = data.error || `Server error: ${response.status}`;
                     error.classList.add('show');
                     if (data.requires2FA) {
                         document.getElementById('faCodeGroup').style.display = 'block';
                     }
+                    return;
                 }
+                
+                const data = await response.json();
+                currentUser = data.user;
+                localStorage.setItem('currentUser', JSON.stringify(currentUser));
+                updateUserUI();
+                hideLoginModal();
+                loadPastes();
             } catch (err) {
-                error.textContent = 'Network error. Please try again.';
+                console.error('Login error:', err);
+                if (err.name === 'AbortError') {
+                    error.textContent = 'Request timeout. Is the server running? Start it with: npm start';
+                } else if (err.message.includes('Failed to fetch')) {
+                    error.textContent = 'Cannot connect to server. Make sure the server is running on port 3000. Run: npm start';
+                } else {
+                    error.textContent = `Network error: ${err.message}. Check console for details.`;
+                }
                 error.classList.add('show');
             }
         }
