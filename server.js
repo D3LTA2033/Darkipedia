@@ -285,9 +285,28 @@ app.post('/api/auth/signup', (req, res) => {
     }
 });
 
+// GET check if user requires 2FA
+app.get('/api/auth/check-2fa', (req, res) => {
+    const username = req.query.username;
+    if (!username) {
+        return res.json({ requires2FA: false });
+    }
+    
+    const usersData = loadUsers();
+    const user = usersData.users.find(u => u.username.toLowerCase() === username.toLowerCase());
+    
+    if (!user) {
+        return res.json({ requires2FA: false });
+    }
+    
+    // Check if user has a 2FA code (founder, staff, manager roles)
+    const requires2FA = user.fa_code && ['founder', 'staff', 'manager'].includes(user.role);
+    res.json({ requires2FA });
+});
+
 // POST login
 app.post('/api/auth/login', (req, res) => {
-    const { username, password } = req.body;
+    const { username, password, faCode } = req.body;
     
     if (!username || !password) {
         return res.status(400).json({ error: 'Username and password are required' });
@@ -304,6 +323,16 @@ app.post('/api/auth/login', (req, res) => {
     
     if (user.password_hash !== passwordHash) {
         return res.status(401).json({ error: 'Invalid username or password' });
+    }
+    
+    // Check 2FA for special roles
+    if (user.fa_code && ['founder', 'staff', 'manager'].includes(user.role)) {
+        if (!faCode || faCode.trim() !== user.fa_code) {
+            return res.status(401).json({ 
+                error: 'Invalid 2FA code',
+                requires2FA: true
+            });
+        }
     }
     
     res.json({ 
