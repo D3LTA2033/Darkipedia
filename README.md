@@ -1,103 +1,46 @@
-# Darkipedia - Anonymous Paste Platform
+# Getting Started with Create React App
 
-A secure, anonymous paste platform with shared storage across all browsers and devices.
+This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
-## Features
+## Available Scripts
 
-- 🚀 Create and share anonymous pastes
-- 🔒 Privacy-first design with anti-bot captcha
-- 🌐 Shared storage - pastes visible across all browsers
-- 📱 Responsive design
-- ⚡ Fast and lightweight
-- 👑 Role-based system (Founder, Staff, Manager, User)
-- 📌 Pin posts (Founder, Staff, Manager can pin)
-- 🔐 User authentication with signup/login
-- 🎨 Doxbin-inspired dark theme
-- 💾 Automatic backups to JSON files
-- 🏷️ Role badges on posts
-- 📊 Post sorting: Pinned Founder > Staff > Manager > Regular posts
+In the project directory, you can run:
 
-## Setup Instructions
+### `npm start`
 
-### Prerequisites
+Runs the app in the development mode.\
+Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
 
-- Node.js (v14 or higher)
-- npm (comes with Node.js)
+The page will reload if you make edits.\
+You will also see any lint errors in the console.
 
-### Installation
+### `npm test`
 
-1. Install dependencies:
-```bash
-npm install
-```
+Launches the test runner in the interactive watch mode.\
+See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
 
-2. Initialize default users (founder, staff, manager):
-```bash
-npm run init-users
-```
+### `npm run build`
 
-This will create default accounts with complex passwords:
-- **Founder**: username=`founder`, password=`F0und3r@2024!XyZ#Secure`
-- **Staff**: username=`staff1`, password=`St@ff$2024!AbC#Secure`
-- **Manager**: username=`manager1`, password=`M@n@g3r$2024!DeF#Secure`
+Builds the app for production to the `build` folder.\
+It correctly bundles React in production mode and optimizes the build for the best performance.
 
-**⚠️ IMPORTANT: Change these passwords after first login!**
+The build is minified and the filenames include the hashes.\
+Your app is ready to be deployed!
 
-3. Start the server:
-```bash
-npm start
-```
+See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
 
-The server will start on `http://localhost:3000` by default.
+### `npm run eject`
 
-4. Access the site:
-- First time visitors will see a loading page with anti-bot captcha
-- After verification, you can browse pastes
-- Login with your credentials to create pastes with your role
+**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
 
-### Environment Variables
+If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
 
-You can set the `PORT` environment variable to change the server port:
-```bash
-PORT=8080 npm start
-```
+Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
 
-## Project Structure
+You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
 
-- `server.js` - Express server with SQLite database
-- `index.html` - Main page showing all pastes
-- `pages/paste.html` - Create new paste page
-- `pages/view.html` - View individual paste page
-- `js/paste.js` - Paste creation logic
-- `pastes.db` - SQLite database (created automatically)
+## Learn More
 
-## API Endpoints
+You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
 
-- `GET /api/pastes` - Get all pastes
-- `GET /api/pastes/:id` - Get a specific paste
-- `POST /api/pastes` - Create a new paste
-- `DELETE /api/pastes/:id` - Delete a paste
-
-## Database
-
-The application uses SQLite for data storage. The database file (`pastes.db`) is created automatically when you first run the server.
-
-## Notes
-
-- Pastes are stored in a SQLite database, making them accessible across all browsers and devices
-- The database file is created in the project root directory
-- Make sure to back up `pastes.db` if you want to preserve your data
-
-## Development
-
-For development, you can use nodemon for auto-reloading:
-
-```bash
-npm install -g nodemon
-nodemon server.js
-```
-
-## License
-
-ISC
-
+To learn React, check out the [React documentation](https://reactjs.org/).
