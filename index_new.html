@@ -1,0 +1,646 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Darkipedia</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            background: #000000;
+            color: #00ff00;
+            font-family: 'Courier New', 'Monaco', monospace;
+            font-size: 14px;
+            line-height: 1.6;
+            min-height: 100vh;
+        }
+        .header {
+            background: #0a0a0a;
+            border-bottom: 1px solid #00ff00;
+            padding: 10px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .header h1 {
+            color: #00ff00;
+            font-size: 24px;
+            text-shadow: 0 0 10px #00ff00;
+            letter-spacing: 2px;
+        }
+        .header-actions {
+            display: flex;
+            gap: 10px;
+        }
+        .btn {
+            background: #0a0a0a;
+            border: 1px solid #00ff00;
+            color: #00ff00;
+            padding: 8px 15px;
+            cursor: pointer;
+            font-family: inherit;
+            font-size: 12px;
+            text-decoration: none;
+            display: inline-block;
+            transition: all 0.3s;
+        }
+        .btn:hover {
+            background: #00ff00;
+            color: #000000;
+            box-shadow: 0 0 10px #00ff00;
+        }
+        .user-info {
+            color: #00ff00;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .role-badge {
+            padding: 3px 8px;
+            border: 1px solid;
+            font-size: 11px;
+            font-weight: bold;
+        }
+        .role-founder {
+            color: #ff0000;
+            border-color: #ff0000;
+            background: #1a0000;
+        }
+        .role-staff {
+            color: #ffff00;
+            border-color: #ffff00;
+            background: #1a1a00;
+        }
+        .role-manager {
+            color: #ff8800;
+            border-color: #ff8800;
+            background: #1a0a00;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 20px auto;
+            padding: 0 20px;
+        }
+        .search-bar {
+            margin-bottom: 20px;
+            display: flex;
+            gap: 10px;
+        }
+        .search-bar input {
+            flex: 1;
+            background: #0a0a0a;
+            border: 1px solid #00ff00;
+            color: #00ff00;
+            padding: 8px;
+            font-family: inherit;
+            font-size: 12px;
+        }
+        .search-bar input:focus {
+            outline: none;
+            box-shadow: 0 0 5px #00ff00;
+        }
+        .filters {
+            margin-bottom: 20px;
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        .filters select {
+            background: #0a0a0a;
+            border: 1px solid #00ff00;
+            color: #00ff00;
+            padding: 5px;
+            font-family: inherit;
+            font-size: 12px;
+        }
+        .paste-list {
+            border: 1px solid #00ff00;
+            background: #0a0a0a;
+        }
+        .paste-item {
+            border-bottom: 1px solid #003300;
+            padding: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: start;
+        }
+        .paste-item:last-child {
+            border-bottom: none;
+        }
+        .paste-item:hover {
+            background: #001a00;
+        }
+        .paste-item.pinned {
+            border-left: 3px solid #00ff00;
+            background: #001a00;
+        }
+        .paste-left {
+            flex: 1;
+        }
+        .paste-title {
+            color: #00ff00;
+            font-size: 16px;
+            margin-bottom: 5px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .paste-title a {
+            color: #00ff00;
+            text-decoration: none;
+        }
+        .paste-title a:hover {
+            text-decoration: underline;
+        }
+        .pin-icon {
+            color: #ffff00;
+            font-weight: bold;
+        }
+        .paste-meta {
+            color: #00aa00;
+            font-size: 11px;
+            display: flex;
+            gap: 15px;
+            margin-top: 5px;
+        }
+        .paste-content-preview {
+            color: #00aa00;
+            font-size: 12px;
+            margin-top: 8px;
+            max-width: 600px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+        .paste-actions {
+            display: flex;
+            gap: 5px;
+        }
+        .paste-actions .btn {
+            padding: 5px 10px;
+            font-size: 11px;
+        }
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.9);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+        .modal.active {
+            display: flex;
+        }
+        .modal-content {
+            background: #0a0a0a;
+            border: 2px solid #00ff00;
+            padding: 30px;
+            max-width: 400px;
+            width: 90%;
+            box-shadow: 0 0 20px #00ff00;
+        }
+        .modal-content h2 {
+            color: #00ff00;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        .form-group label {
+            display: block;
+            color: #00ff00;
+            margin-bottom: 5px;
+            font-size: 12px;
+        }
+        .form-group input {
+            width: 100%;
+            background: #000000;
+            border: 1px solid #00ff00;
+            color: #00ff00;
+            padding: 8px;
+            font-family: inherit;
+            font-size: 12px;
+        }
+        .form-group input:focus {
+            outline: none;
+            box-shadow: 0 0 5px #00ff00;
+        }
+        .error {
+            color: #ff0000;
+            font-size: 11px;
+            margin-top: 5px;
+            display: none;
+        }
+        .error.show {
+            display: block;
+        }
+        .modal-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+        .modal-actions .btn {
+            flex: 1;
+        }
+        .no-pastes {
+            text-align: center;
+            padding: 40px;
+            color: #00aa00;
+        }
+    </style>
+</head>
+<body>
+    <!-- Check captcha first -->
+    <script>
+        const verified = sessionStorage.getItem('captcha_verified');
+        const verifyTime = sessionStorage.getItem('captcha_time');
+        if (verified !== 'true' || !verifyTime || (Date.now() - parseInt(verifyTime)) > 3600000) {
+            window.location.href = 'loading.html';
+        }
+    </script>
+
+    <div class="header">
+        <h1>DARKIPEDIA</h1>
+        <div class="header-actions">
+            <div class="user-info" id="userInfo" style="display: none;">
+                <span id="usernameDisplay"></span>
+                <span class="role-badge" id="roleBadge"></span>
+                <button class="btn" onclick="logout()">Logout</button>
+            </div>
+            <button class="btn" onclick="showLoginModal()" id="loginBtn">Login</button>
+            <button class="btn" onclick="showSignupModal()" id="signupBtn">Sign Up</button>
+            <a href="pages/paste.html" class="btn">New Paste</a>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="search-bar">
+            <input type="text" id="searchInput" placeholder="Search pastes..." onkeyup="filterPastes()">
+        </div>
+        <div class="filters">
+            <select id="categoryFilter" onchange="filterPastes()">
+                <option value="all">All Categories</option>
+            </select>
+            <select id="sortFilter" onchange="filterPastes()">
+                <option value="default">Default Sort</option>
+                <option value="date-desc">Newest First</option>
+                <option value="date-asc">Oldest First</option>
+            </select>
+        </div>
+        <div class="paste-list" id="pasteList">
+            <div class="no-pastes">Loading pastes...</div>
+        </div>
+    </div>
+
+    <!-- Login Modal -->
+    <div class="modal" id="loginModal">
+        <div class="modal-content">
+            <h2>LOGIN</h2>
+            <div class="form-group">
+                <label>Username</label>
+                <input type="text" id="loginUsername" autocomplete="username">
+            </div>
+            <div class="form-group">
+                <label>Password</label>
+                <input type="password" id="loginPassword" autocomplete="current-password">
+            </div>
+            <div class="error" id="loginError"></div>
+            <div class="modal-actions">
+                <button class="btn" onclick="login()">Login</button>
+                <button class="btn" onclick="hideLoginModal()">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Signup Modal -->
+    <div class="modal" id="signupModal">
+        <div class="modal-content">
+            <h2>SIGN UP</h2>
+            <div class="form-group">
+                <label>Username</label>
+                <input type="text" id="signupUsername" autocomplete="username">
+            </div>
+            <div class="form-group">
+                <label>Password (min 8 characters)</label>
+                <input type="password" id="signupPassword" autocomplete="new-password">
+            </div>
+            <div class="error" id="signupError"></div>
+            <div class="modal-actions">
+                <button class="btn" onclick="signup()">Sign Up</button>
+                <button class="btn" onclick="hideSignupModal()">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE = window.location.origin + '/api';
+        let currentUser = null;
+        let allPastes = [];
+        let filteredPastes = [];
+
+        // Load user from localStorage
+        function loadUser() {
+            const userStr = localStorage.getItem('currentUser');
+            if (userStr) {
+                currentUser = JSON.parse(userStr);
+                updateUserUI();
+            }
+        }
+
+        // Update UI based on user state
+        function updateUserUI() {
+            const userInfo = document.getElementById('userInfo');
+            const loginBtn = document.getElementById('loginBtn');
+            const signupBtn = document.getElementById('signupBtn');
+            
+            if (currentUser) {
+                userInfo.style.display = 'flex';
+                loginBtn.style.display = 'none';
+                signupBtn.style.display = 'none';
+                document.getElementById('usernameDisplay').textContent = currentUser.username;
+                const roleBadge = document.getElementById('roleBadge');
+                roleBadge.textContent = currentUser.role.toUpperCase();
+                roleBadge.className = 'role-badge role-' + currentUser.role;
+            } else {
+                userInfo.style.display = 'none';
+                loginBtn.style.display = 'inline-block';
+                signupBtn.style.display = 'inline-block';
+            }
+        }
+
+        // Login
+        function showLoginModal() {
+            document.getElementById('loginModal').classList.add('active');
+            document.getElementById('loginUsername').focus();
+        }
+        function hideLoginModal() {
+            document.getElementById('loginModal').classList.remove('active');
+            document.getElementById('loginError').classList.remove('show');
+        }
+        async function login() {
+            const username = document.getElementById('loginUsername').value;
+            const password = document.getElementById('loginPassword').value;
+            const error = document.getElementById('loginError');
+            
+            if (!username || !password) {
+                error.textContent = 'Please enter username and password';
+                error.classList.add('show');
+                return;
+            }
+            
+            try {
+                const response = await fetch(`${API_BASE}/auth/login`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username, password })
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok) {
+                    currentUser = data.user;
+                    localStorage.setItem('currentUser', JSON.stringify(currentUser));
+                    updateUserUI();
+                    hideLoginModal();
+                    loadPastes();
+                } else {
+                    error.textContent = data.error || 'Login failed';
+                    error.classList.add('show');
+                }
+            } catch (err) {
+                error.textContent = 'Network error. Please try again.';
+                error.classList.add('show');
+            }
+        }
+
+        // Signup
+        function showSignupModal() {
+            document.getElementById('signupModal').classList.add('active');
+            document.getElementById('signupUsername').focus();
+        }
+        function hideSignupModal() {
+            document.getElementById('signupModal').classList.remove('active');
+            document.getElementById('signupError').classList.remove('show');
+        }
+        async function signup() {
+            const username = document.getElementById('signupUsername').value;
+            const password = document.getElementById('signupPassword').value;
+            const error = document.getElementById('signupError');
+            
+            if (!username || !password) {
+                error.textContent = 'Please enter username and password';
+                error.classList.add('show');
+                return;
+            }
+            
+            if (password.length < 8) {
+                error.textContent = 'Password must be at least 8 characters';
+                error.classList.add('show');
+                return;
+            }
+            
+            try {
+                const response = await fetch(`${API_BASE}/auth/signup`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username, password })
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok) {
+                    // Auto login after signup
+                    currentUser = data.user;
+                    localStorage.setItem('currentUser', JSON.stringify(currentUser));
+                    updateUserUI();
+                    hideSignupModal();
+                    loadPastes();
+                } else {
+                    error.textContent = data.error || 'Signup failed';
+                    error.classList.add('show');
+                }
+            } catch (err) {
+                error.textContent = 'Network error. Please try again.';
+                error.classList.add('show');
+            }
+        }
+
+        // Logout
+        function logout() {
+            currentUser = null;
+            localStorage.removeItem('currentUser');
+            updateUserUI();
+            loadPastes();
+        }
+
+        // Load pastes
+        async function loadPastes() {
+            try {
+                const response = await fetch(`${API_BASE}/pastes`);
+                if (!response.ok) throw new Error('Failed to fetch pastes');
+                allPastes = await response.json();
+                filterPastes();
+            } catch (err) {
+                console.error('Error loading pastes:', err);
+                document.getElementById('pasteList').innerHTML = '<div class="no-pastes">Error loading pastes</div>';
+            }
+        }
+
+        // Filter and render pastes
+        function filterPastes() {
+            const search = document.getElementById('searchInput').value.toLowerCase();
+            const category = document.getElementById('categoryFilter').value;
+            const sort = document.getElementById('sortFilter').value;
+            
+            filteredPastes = allPastes.filter(paste => {
+                const matchSearch = !search || 
+                    (paste.title && paste.title.toLowerCase().includes(search)) ||
+                    (paste.content && paste.content.toLowerCase().includes(search)) ||
+                    (paste.category && paste.category.toLowerCase().includes(search));
+                const matchCategory = category === 'all' || paste.category === category;
+                return matchSearch && matchCategory;
+            });
+            
+            // Sort
+            if (sort === 'date-desc') {
+                filteredPastes.sort((a, b) => new Date(b.date) - new Date(a.date));
+            } else if (sort === 'date-asc') {
+                filteredPastes.sort((a, b) => new Date(a.date) - new Date(b.date));
+            }
+            // Default sort is already done by server (pinned > role > date)
+            
+            renderPastes();
+            updateCategoryFilter();
+        }
+
+        // Update category filter options
+        function updateCategoryFilter() {
+            const categories = [...new Set(allPastes.map(p => p.category).filter(Boolean))];
+            const select = document.getElementById('categoryFilter');
+            const currentValue = select.value;
+            select.innerHTML = '<option value="all">All Categories</option>' +
+                categories.map(cat => `<option value="${cat}">${cat}</option>`).join('');
+            select.value = currentValue;
+        }
+
+        // Render pastes
+        function renderPastes() {
+            const list = document.getElementById('pasteList');
+            
+            if (filteredPastes.length === 0) {
+                list.innerHTML = '<div class="no-pastes">No pastes found</div>';
+                return;
+            }
+            
+            list.innerHTML = filteredPastes.map(paste => {
+                const roleBadge = paste.role && paste.role !== 'user' 
+                    ? `<span class="role-badge role-${paste.role}">${paste.role.toUpperCase()}</span>` 
+                    : '';
+                const pinIcon = paste.pinned ? '<span class="pin-icon">📌</span>' : '';
+                const preview = paste.content ? paste.content.substring(0, 100) + (paste.content.length > 100 ? '...' : '') : '';
+                const canPin = currentUser && ['founder', 'staff', 'manager'].includes(currentUser.role);
+                const pinBtn = canPin 
+                    ? `<button class="btn" onclick="togglePin('${paste.id}', ${!paste.pinned})">${paste.pinned ? 'Unpin' : 'Pin'}</button>`
+                    : '';
+                
+                return `
+                    <div class="paste-item ${paste.pinned ? 'pinned' : ''}">
+                        <div class="paste-left">
+                            <div class="paste-title">
+                                ${pinIcon}
+                                <a href="pages/view.html?id=${paste.id}">${paste.title || 'Untitled'}</a>
+                                ${roleBadge}
+                            </div>
+                            <div class="paste-meta">
+                                <span>Category: ${paste.category || 'Uncategorized'}</span>
+                                <span>Date: ${new Date(paste.date).toLocaleString()}</span>
+                                <span>Size: ${paste.content ? paste.content.length : 0} chars</span>
+                            </div>
+                            <div class="paste-content-preview">${preview}</div>
+                        </div>
+                        <div class="paste-actions">
+                            ${pinBtn}
+                            <button class="btn" onclick="copyLink('${paste.id}')">Copy Link</button>
+                            ${currentUser ? `<button class="btn" onclick="deletePaste('${paste.id}')">Delete</button>` : ''}
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // Toggle pin
+        async function togglePin(id, pinned) {
+            if (!currentUser || !['founder', 'staff', 'manager'].includes(currentUser.role)) {
+                alert('Only founder, staff, and managers can pin posts');
+                return;
+            }
+            
+            try {
+                const response = await fetch(`${API_BASE}/pastes/${id}/pin`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ pinned, role: currentUser.role })
+                });
+                
+                if (response.ok) {
+                    loadPastes();
+                } else {
+                    alert('Failed to pin/unpin post');
+                }
+            } catch (err) {
+                alert('Network error');
+            }
+        }
+
+        // Copy link
+        function copyLink(id) {
+            const url = `${window.location.origin}/pages/view.html?id=${id}`;
+            navigator.clipboard.writeText(url).then(() => {
+                alert('Link copied to clipboard');
+            });
+        }
+
+        // Delete paste
+        async function deletePaste(id) {
+            if (!confirm('Delete this paste?')) return;
+            
+            try {
+                const response = await fetch(`${API_BASE}/pastes/${id}`, {
+                    method: 'DELETE'
+                });
+                
+                if (response.ok) {
+                    loadPastes();
+                } else {
+                    alert('Failed to delete paste');
+                }
+            } catch (err) {
+                alert('Network error');
+            }
+        }
+
+        // Enter key handlers
+        document.getElementById('loginPassword').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') login();
+        });
+        document.getElementById('signupPassword').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') signup();
+        });
+
+        // Initialize
+        loadUser();
+        loadPastes();
+        setInterval(loadPastes, 10000); // Refresh every 10 seconds
+    </script>
+</body>
+</html>
+

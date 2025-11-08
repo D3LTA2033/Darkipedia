@@ -1,0 +1,754 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Darkipedia - Anonymous Paste Platform</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- SEO meta tags -->
+    <meta name="description" content="Darkipedia is an anonymous paste platform for sharing code snippets, text files, and notes safely and quickly. No logins or registrations required.">
+    <meta name="keywords" content="pastebin, anonymous, paste platform, code sharing, text snippets, dark mode, privacy, temp notes, paste, share code">
+    <meta name="author" content="Darkipedia Team">
+    <link rel="canonical" href="https://darkipedia.example.com/">
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="Darkipedia - Anonymous Paste Platform">
+    <meta property="og:description" content="Share text or code anonymously. No sign up. Minimalist and private.">
+    <meta property="og:url" content="https://darkipedia.example.com/">
+    <meta property="og:site_name" content="Darkipedia">
+    <meta property="og:image" content="https://darkipedia.example.com/assets/og-image.png">
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Darkipedia - Anonymous Paste Platform">
+    <meta name="twitter:description" content="Share text, notes, or code securely and anonymously with Darkipedia.">
+    <meta name="twitter:image" content="https://darkipedia.example.com/assets/og-image.png">
+    <!-- Google Fonts for code, add a pop header font -->
+    <link href="https://fonts.googleapis.com/css?family=Fira+Mono:400,700|Montserrat:900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+    <style>
+        :root {
+            --gray-darkest: #101017;
+            --gray-darker: #17181f;
+            --gray-dark: #211F25;
+            --gray-medium: #262928;
+            --gray-light: #383940;
+            --gray-border: #23232d;
+            --gray-table-head: #181b22;
+            --gray-table-row: #191b20;
+            --gray-accent: #252a33;
+            --green-link: #53ffbc;
+            --text-main: #dff6ee;
+            --text-head: #f7fff7;
+            --text-muted: #a3bfa1;
+            --brand-green: #57ffb1;
+            --brand-dot: #33ff99;
+            --shadow: 0 0 38px #09ecb550, 0 2px 28px #14162580;
+            --main-max-width: 1160px;
+            --table-font-size: 1.15em;
+            --neon: 0 0 11px #53ffbc, 0 0 4px #53ffbc80, 0 0 10px #53ffbc50;
+            --manager-gold: #ffd700;
+            --manager-red: #ff5353;
+        }
+
+        html, body {
+            background: linear-gradient(120deg, #0f0f17 0%, #141d24 100%);
+            color: var(--text-main);
+            font-family: 'Fira Mono', 'Consolas', monospace;
+            min-height: 100vh;
+            margin: 0;
+            font-size: 19.5px;
+            scroll-behavior: smooth;
+        }
+
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            min-height: 100vh;
+        }
+
+        .container {
+            margin: 3.2rem 0 2rem;
+            background: var(--gray-darker);
+            box-shadow: var(--shadow);
+            max-width: var(--main-max-width);
+            min-width: 330px;
+            border-radius: 20px;
+            border: 2.4px solid var(--gray-border);
+            overflow: hidden;
+            width: 95vw;
+            position:relative;
+            z-index: 2;
+            display: flex;
+        }
+
+        /* Side manager bar styles */
+        #manager-bar {
+            width: 330px;
+            background: linear-gradient(135deg,#161607 60%, #422c09 100%);
+            border-right: 2.6px solid var(--manager-gold);
+            padding: 2.1em 1.4em 1.2em 1.35em;
+            color: var(--manager-gold);
+            font-family: 'Fira Mono', monospace;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            z-index: 30;
+            box-shadow: 0 0 22px #ffeb3b44, 0 2px 8px #ffb12044;
+            min-height: 100%;
+        }
+        #manager-bar h2 {
+            color: var(--manager-red);
+            font-size: 1.55em;
+            margin-top: .1em;
+            margin-bottom: 1.4em;
+            font-weight: 900;
+            letter-spacing: 0.09em;
+            filter: drop-shadow(0 0 6px #ffd700c0);
+        }
+        #manager-list {
+            width: 100%;
+        }
+        .manager-paste-row {
+            background: linear-gradient(90deg,#352a0f 75%, #2a1d0e 100%);
+            border: 1.9px solid #ffea8078;
+            border-radius: 14px;
+            padding: 1.05em 1em .7em 1.2em;
+            margin-bottom: 1em;
+            color: #fff6be;
+            box-shadow: 0 0 9px #ffd70030;
+            font-size: 1.04em;
+            word-break: break-word;
+            transition: box-shadow 0.15s, background 0.16s;
+        }
+        .manager-paste-title {
+            font-weight: bold;
+            color: var(--manager-gold);
+            margin-bottom: .4em;
+        }
+        .manager-paste-category, .manager-paste-date {
+            color: #ffe26e;
+            font-size: .97em;
+            display: inline-block;
+            margin-right: .6em;
+        }
+        .manager-paste-row:hover {
+            box-shadow: 0 0 16px #ffd70060,0 0 22px #ffd70090;
+            background: #483a18;
+        }
+        @media (max-width: 1460px) {
+            .container {
+                margin-left: 0.7em;
+                margin-right: 0.7em;
+                max-width: 99vw;
+                min-width: 0;
+            }
+        }
+        @media (max-width: 1050px) {
+            #manager-bar {
+                min-width: 150px;
+                width: 170px;
+                font-size: .81em;
+                padding: 1.3em .6em 1.2em .5em;
+            }
+        }
+        @media (max-width: 900px) {
+            #manager-bar {
+                display: none !important;
+            }
+            .container {
+                flex-direction: column !important;
+            }
+        }
+        @media (max-width: 650px) {
+            .container {
+                border-radius: 0;
+            }
+        }
+        /* Main app, manager btn, popup styles */
+        .app-main-content {
+            flex: 1;
+            min-width: 0;
+            display: flex;
+            flex-direction: column;
+        }
+        .manager-btn {
+            position: fixed;
+            top: 17px;
+            right: 21px;
+            z-index: 110;
+            background: linear-gradient(90deg,#ffd700,#fffbe2);
+            color: #2f2900;
+            font-weight: 900;
+            border-radius: 50%;
+            border: 2.6px solid #a98700ba;
+            box-shadow: 0 0 12px #fff45660, 0 2px 9px #ffd23e60;
+            width: 52px;
+            height: 52px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2.05em;
+            cursor: pointer;
+            transition: box-shadow .16s, background .13s;
+        }
+        .manager-btn:hover { background: #f7c600; box-shadow: 0 0 32px #ffd70040; }
+        /* Password popup dialog */
+        #manager-popup {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0; right: 0; bottom: 0;
+            z-index: 9999;
+            background: rgba(41,35,0,0.63);
+            justify-content: center;
+            align-items: center;
+        }
+        #manager-popup.active {
+            display: flex;
+        }
+        #manager-popup-content {
+            background: #292100;
+            border-radius: 19px;
+            padding: 2.4em 2.5em 2.1em 2.5em;
+            box-shadow: 0 0 110px #ffd60032, 0 1px 23px #e7b4276c;
+            color: var(--manager-gold);
+            min-width: 290px;
+            max-width: 93vw;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        #manager-popup-content label {
+            color: #ffe26e;
+            font-size: 1.1em;
+            font-weight: 800;
+            margin-bottom: 1.3em;
+        }
+        #manager-password-input {
+            font-size:1.07em;
+            padding: 0.7em 1em;
+            border-radius: 9px;
+            margin-bottom: 1.1em;
+            border: 1.3px solid #ffe179;
+            background: #332a13;
+            color: #fffde5;
+        }
+        #manager-popup-content button {
+            background: linear-gradient(90deg,#ffd700 80%,#fffbe2 100%);
+            font-weight: bold;
+            color: #392a00;
+            border-radius: 9px;
+            border: 2px solid #ecc23c;
+            font-size: 1.09em;
+            padding: 0.65em 2.4em;
+            margin-top: 0.6em;
+        }
+        #manager-popup-content button:active {
+            background: #fff64d;
+        }
+        #manager-popup-error {
+            color: #ff5353;
+            font-weight: bold;
+            margin-bottom: 0.7em;
+            font-size: .97em;
+            display: none;
+        }
+        /* rest of original CSS here ... */
+        /* Paste table is unchanged (from template), so keep as is */
+        /* ... original CSS below ... */
+        /* (original CSS mostly unchanged, omitted here for brevity, assuming previous rules present) */
+    </style>
+</head>
+<body>
+    <div class="manager-btn" id="managerBtn" title="Manager Post">
+        <i class="fa-solid fa-gem"></i>
+    </div>
+    <div id="manager-popup">
+        <div id="manager-popup-content">
+            <label for="manager-password-input"><i class="fa-solid fa-key"></i> Manager Password:</label>
+            <input id="manager-password-input" type="password" placeholder="Enter password..." autocomplete="off">
+            <div id="manager-popup-error"></div>
+            <button id="manager-popup-submit">Continue as Manager</button>
+            <button id="manager-popup-cancel" style="background:#ffe0b3;margin-top:.7em;">Cancel</button>
+        </div>
+    </div>
+    <div class="container neon-border">
+        <!-- Manager Side Bar -->
+        <div id="manager-bar" style="display:none;">
+            <h2><i class="fa-solid fa-star"></i> Manager Posts</h2>
+            <div id="manager-list"></div>
+        </div>
+        <!-- Main App Content -->
+        <div class="app-main-content">
+        <header>
+            <div class="branding">
+                <span class="brand-dot"></span>
+                <h1>darkipedia</h1>
+            </div>
+            <a href="pages/paste.html" class="header-link" id="headerNavPaste">
+                <i class="fa-solid fa-pen-to-square" style="margin-right:0.7em;"></i>
+                New Paste
+            </a>
+        </header>
+        <main>
+            <div class="action-bar">
+                <div class="search-bar-wrap">
+                    <i class="fa-solid fa-magnifying-glass" style="color:#47ffb8c7;opacity:.89;font-size:1.06em;margin-right:0.65em;"></i>
+                    <input id="search-input" type="text" placeholder="Search title, content, or category..." autocomplete="off" spellcheck="false" />
+                    <button id="search-clear-btn" title="Clear search">
+                        <i class="fa-solid fa-xmark"></i>
+                    </button>
+                </div>
+                <a href="pages/paste.html" class="new-paste-btn" id="mainNavPaste">
+                    <i class="fa-solid fa-plus" style="margin-right:0.85em;"></i>New Paste
+                </a>
+            </div>
+            <div class="options-bar">
+                <label>
+                    <i class="fa-solid fa-folder" style="color:#5fffa6; font-size:1.06em;margin-right:.43em;opacity:.82;"></i>
+                    <span style="font-size:1em; color:#5fffa6; font-weight:800;">Category:</span>
+                    <select id="filter-category" class="filter-select">
+                        <option value="all">All</option>
+                    </select>
+                </label>
+                <label>
+                    <i class="fa-solid fa-sort" style="color:#c0f395; font-size:1.04em;margin-right:.43em;opacity:.85;"></i>
+                    <span style="font-size:1em; color:#c0f395; font-weight:800;">Sort by:</span>
+                    <select id="sort-option" class="sort-select">
+                        <option value="date-desc">Newest</option>
+                        <option value="date-asc">Oldest</option>
+                        <option value="title-az">Title A-Z</option>
+                        <option value="title-za">Title Z-A</option>
+                        <option value="length-desc">Longest</option>
+                        <option value="length-asc">Shortest</option>
+                    </select>
+                </label>
+            </div>
+            <section id="pastes-section">
+                <div id="pastes-table-wrap">
+                    <table id="pastes-table">
+                        <thead>
+                            <tr>
+                                <th style="width: 36%;"><i class="fa-regular fa-file-lines" style="margin-right:.35em;opacity:.82;filter:drop-shadow(0 0 5px #19ffd850);"></i>Title</th>
+                                <th style="width: 14%;"><i class="fa-solid fa-tags" style="margin-right:.32em;opacity:.82;"></i>Category</th>
+                                <th style="width: 12%;"><i class="fa-solid fa-calendar-days" style="margin-right:.32em;opacity:.82;"></i>Date</th>
+                                <th style="width: 13%;"><i class="fa-solid fa-arrows-left-right-to-line" style="margin-right:.32em;opacity:.82;"></i>Size</th>
+                                <th style="width: 14%;"><i class="fa-solid fa-terminal" style="margin-right:.32em;opacity:.82;"></i>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="pastes-tbody">
+                            <!-- Pastes loaded here -->
+                        </tbody>
+                    </table>
+                </div>
+                <p id="no-pastes-message" style="display:none;">No pastes yet. Paste something legendary.</p>
+            </section>
+        </main>
+        </div>
+    </div>
+    <script>
+        // --- AUTH & UI Variables
+        const MANAGER_PASSWORD = "Clown2033";
+        let isManager = false;
+        // Save manager in session only
+        function setManager(val){
+            isManager = !!val;
+            if(val) sessionStorage.setItem("isManager","yes");
+            else sessionStorage.removeItem("isManager");
+            updateManagerUI();
+        }
+        function getManager(){
+            if(typeof isManager === "boolean") return isManager;
+            isManager = sessionStorage.getItem("isManager")==="yes";
+            return isManager;
+        }
+        // --- MANAGER BUTTON/POPUP LOGIC
+        const managerBtn = document.getElementById('managerBtn');
+        const managerPopup = document.getElementById('manager-popup');
+        const managerInput = document.getElementById('manager-password-input');
+        const managerSubmit = document.getElementById('manager-popup-submit');
+        const managerCancel = document.getElementById('manager-popup-cancel');
+        const managerError = document.getElementById('manager-popup-error');
+        function showManagerPopup() {
+            managerPopup.classList.add('active');
+            managerError.style.display = "none";
+            managerInput.value = "";
+            setTimeout(()=>managerInput.focus(),100);
+        }
+        function hideManagerPopup() {
+            managerPopup.classList.remove('active');
+            managerError.style.display = "none";
+            managerInput.value = "";
+        }
+        managerBtn.onclick = showManagerPopup;
+        managerCancel.onclick = hideManagerPopup;
+        managerSubmit.onclick = loginManager;
+        managerInput.addEventListener('keydown',function(e){
+            if(e.key==="Enter") loginManager();
+        });
+        function loginManager() {
+            if(managerInput.value === MANAGER_PASSWORD) {
+                setManager(true);
+                hideManagerPopup();
+            } else {
+                managerError.textContent = "Incorrect password!";
+                managerError.style.display = "block";
+                managerInput.value = "";
+                managerInput.focus();
+            }
+        }
+        managerPopup.addEventListener("click",function(e){
+            if(e.target === managerPopup) hideManagerPopup();
+        });
+        // Only show if not manager
+        function updateManagerUI(){
+            const bar = document.getElementById('manager-bar');
+            if(getManager()){
+                managerBtn.style.display = "none";
+                bar.style.display = "flex";
+            }else{
+                managerBtn.style.display = "flex";
+                bar.style.display = "none";
+            }
+        }
+        // --- PASTE UI/LOGIC (mostly as original)
+        const pastesTbody = document.getElementById('pastes-tbody');
+        const noPastesMsg = document.getElementById('no-pastes-message');
+        const searchInput = document.getElementById('search-input');
+        const searchClearBtn = document.getElementById('search-clear-btn');
+        const filterCategory = document.getElementById('filter-category');
+        const sortOption = document.getElementById('sort-option');
+
+        let allPastes = [];
+        let filteredPastes = [];
+
+        function formatPasteDate(iso) {
+            if (!iso) return "";
+            const d = new Date(iso);
+            const today = new Date();
+            const pad = n => n.toString().padStart(2, '0');
+            const isToday =
+                d.getDate() === today.getDate() &&
+                d.getMonth() === today.getMonth() &&
+                d.getFullYear() === today.getFullYear();
+            const yest = new Date();
+            yest.setDate(today.getDate()-1);
+            const isYest =
+                d.getDate() === yest.getDate() &&
+                d.getMonth() === yest.getMonth() &&
+                d.getFullYear() === yest.getFullYear();
+
+            let dateStr = `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
+            let timeStr = `${pad(d.getHours())}:${pad(d.getMinutes())}`;
+            if (isToday)
+                return `Today, ${timeStr}`;
+            else if (isYest)
+                return `Yesterday, ${timeStr}`;
+            else
+                return `${dateStr} ${timeStr}`;
+        }
+
+        function blinkRow(row) {
+            row.style.transition = 'background 0.28s, box-shadow 0.23s';
+            row.style.background = "#1a5245";
+            row.style.boxShadow = "0 0 32px #29ffb260";
+            setTimeout(() => {
+                row.style.background = "";
+                row.style.boxShadow = "";
+            }, 870);
+        }
+
+        function getUniqueCategories(pastes) {
+            const categories = new Set();
+            for (const paste of pastes) {
+                if (paste.category && paste.category.trim())
+                    categories.add(paste.category.trim());
+            }
+            return Array.from(categories).sort((a, b) => a.localeCompare(b));
+        }
+
+        function renderCategoryFilter() {
+            const cats = getUniqueCategories(allPastes);
+            filterCategory.innerHTML = '<option value="all">All</option>' +
+                cats.map(cat => `<option value="${cat}">${cat}</option>`).join('');
+        }
+
+        function applyFiltersAndSort() {
+            let q = (searchInput.value || '').trim().toLowerCase();
+            let filterCat = filterCategory.value;
+            let sortVal = sortOption.value;
+
+            filteredPastes = allPastes
+                .filter(p => {
+                    let matchSearch = true;
+                    if (q.length > 0) {
+                        const inTitle = (p.title || '').toLowerCase().includes(q);
+                        const inCategory = (p.category || '').toLowerCase().includes(q);
+                        const inContent = (p.content || '').toLowerCase().includes(q);
+                        matchSearch = inTitle || inCategory || inContent;
+                    }
+                    let matchCat = filterCat === 'all' || (!filterCat) || ((p.category || '') === filterCat);
+                    return matchSearch && matchCat;
+                });
+
+            switch (sortVal) {
+                case 'date-desc':
+                    filteredPastes.sort((a, b) => (b.date||'').localeCompare(a.date||''));
+                    break;
+                case 'date-asc':
+                    filteredPastes.sort((a, b) => (a.date||'').localeCompare(b.date||''));
+                    break;
+                case 'title-az':
+                    filteredPastes.sort((a, b) => (a.title||'').localeCompare(b.title||''));
+                    break;
+                case 'title-za':
+                    filteredPastes.sort((a, b) => (b.title||'').localeCompare(a.title||''));
+                    break;
+                case 'length-desc':
+                    filteredPastes.sort((a, b) => ((b.content||'').length - (a.content||'').length));
+                    break;
+                case 'length-asc':
+                    filteredPastes.sort((a, b) => ((a.content||'').length - (b.content||'').length));
+                    break;
+            }
+            renderPastesTable();
+            renderManagerBar();
+        }
+
+        function renderPastesTable() {
+            pastesTbody.innerHTML = '';
+            if (filteredPastes.length === 0) {
+                noPastesMsg.style.display = 'block';
+                return;
+            } else {
+                noPastesMsg.style.display = 'none';
+            }
+            filteredPastes.forEach((paste, i) => {
+                const tr = document.createElement('tr');
+
+                // Title with link (+ manager tag if manager post)
+                const titleTd = document.createElement('td');
+                const a = document.createElement('a');
+                a.href = `pages/view.html?id=${encodeURIComponent(paste.id)}`;
+                a.className = 'paste-title-link';
+                a.textContent = paste.title && paste.title.trim() ? paste.title : `Untitled`;
+                titleTd.appendChild(a);
+
+                if (paste.manager) {
+                    // Show "Manager Post" tag
+                    const tag = document.createElement('span');
+                    tag.innerHTML = ' <span style="color: #ffd700; font-size:.93em; font-weight:800; background:#332500; padding:.24em .7em .22em .6em; border-radius:8px; margin-left:.6em;letter-spacing:.015em;"><i class="fa-solid fa-star"></i> Manager</span>';
+                    titleTd.appendChild(tag);
+                }
+                tr.appendChild(titleTd);
+
+                // Category
+                const catTd = document.createElement('td');
+                catTd.className = 'paste-category';
+                catTd.textContent = paste.category?.trim() || 'Uncategorized';
+                tr.appendChild(catTd);
+
+                // Date
+                const dateTd = document.createElement('td');
+                dateTd.className = 'paste-date';
+                if (paste.date)
+                    dateTd.textContent = formatPasteDate(paste.date);
+                else
+                    dateTd.textContent = '';
+                tr.appendChild(dateTd);
+
+                // Length/size
+                const lenTd = document.createElement('td');
+                const len = (paste.content || '').length;
+                lenTd.innerHTML = `<span class="paste-length"><i class="fa-regular fa-circle-dot" style="color:#59ffbf88;margin-right:0.7em;"></i>${len} chars</span>`;
+                tr.appendChild(lenTd);
+
+                // Actions: Copy / Delete
+                const actionsTd = document.createElement('td');
+                actionsTd.className = 'paste-actions-btns';
+
+                const copyBtn = document.createElement('button');
+                copyBtn.className = 'paste-copy-btn';
+                copyBtn.innerHTML = '<i class="fa-solid fa-link" style="margin-right:0.64em;"></i>Copy Link';
+                copyBtn.title = 'Copy paste link to clipboard';
+                copyBtn.onclick = e => {
+                    e.preventDefault();
+                    const url = `${location.origin}/pages/view.html?id=${encodeURIComponent(paste.id)}`;
+                    navigator.clipboard.writeText(url).then(() => {
+                        copyBtn.innerHTML = '<i class="fa-solid fa-check" style="margin-right:0.64em;"></i>Copied!';
+                        setTimeout(() => { copyBtn.innerHTML = '<i class="fa-solid fa-link" style="margin-right:0.64em;"></i>Copy Link'; }, 1100);
+                    });
+                };
+                actionsTd.appendChild(copyBtn);
+
+                const deleteBtn = document.createElement('button');
+                deleteBtn.className = 'paste-delete-btn';
+                deleteBtn.innerHTML = '<i class="fa-solid fa-trash-can" style="margin-right:0.58em;"></i>Delete';
+                deleteBtn.title = 'Delete this paste';
+                deleteBtn.onclick = async e => {
+                    e.preventDefault();
+                    if (confirm('Delete this paste forever?')) {
+                        try {
+                            const response = await fetch(`${API_BASE}/pastes/${encodeURIComponent(paste.id)}`, {
+                                method: 'DELETE'
+                            });
+                            if (!response.ok) {
+                                throw new Error('Failed to delete paste');
+                            }
+                            // Remove from local array and refresh UI
+                            allPastes = allPastes.filter(p => p.id !== paste.id);
+                            updateUI();
+                        } catch (error) {
+                            console.error('Error deleting paste:', error);
+                            alert('Failed to delete paste. Please try again.');
+                        }
+                    }
+                };
+                actionsTd.appendChild(deleteBtn);
+
+                tr.appendChild(actionsTd);
+
+                // Animation: blink if just added in last 7 seconds
+                let pasteTime = Date.parse(paste.date);
+                if (Date.now() - pasteTime < 7000) {
+                    setTimeout(() => blinkRow(tr), i * 125 + 400);
+                }
+                pastesTbody.appendChild(tr);
+            });
+        }
+
+        // --- MANAGER BAR RENDER ---
+        function renderManagerBar() {
+            const managerBar = document.getElementById("manager-bar");
+            const managerList = document.getElementById("manager-list");
+            if (!getManager()) {
+                managerBar.style.display = "none";
+                return;
+            }
+            // Only show posts with .manager===true
+            const managerPastes = allPastes.filter(p => p.manager);
+            if(managerPastes.length === 0) {
+                managerList.innerHTML = "<span style='color:#fffbe2;font-size:.99em;font-style:italic;'>No manager posts yet.</span>";
+                return;
+            }
+            managerList.innerHTML = "";
+            managerPastes.forEach(p => {
+                const row = document.createElement("div");
+                row.className = "manager-paste-row";
+                row.innerHTML = `
+                    <div class="manager-paste-title">
+                        <i class="fa-solid fa-star"></i> ${p.title ? p.title : "Untitled"}
+                    </div>
+                    <div class="manager-paste-category">
+                        <i class="fa-solid fa-tags"></i> ${p.category ? p.category : "Uncategorized"}
+                    </div>
+                    <div class="manager-paste-date">
+                        <i class="fa-solid fa-calendar-days"></i> ${formatPasteDate(p.date)}
+                    </div>
+                    <div>
+                        <a href="pages/view.html?id=${encodeURIComponent(p.id)}" style="display:inline-block;color:#fffde4;text-decoration:underline;margin-top:0.7em;"><i class="fa-solid fa-arrow-up-right-from-square"></i> View</a>
+                    </div>
+                `;
+                managerList.appendChild(row);
+            });
+        }
+
+        const API_BASE = window.location.origin + '/api';
+        
+        async function savePastes() {
+            // No need to save all pastes - individual paste creation is handled in paste.js
+            // This function is kept for compatibility but doesn't need to do anything
+        }
+        
+        async function loadPastes() {
+            try {
+                const response = await fetch(`${API_BASE}/pastes`);
+                if (!response.ok) {
+                    throw new Error('Failed to fetch pastes');
+                }
+                const pastes = await response.json();
+                allPastes = Array.isArray(pastes) ? pastes.slice() : [];
+            } catch (e) {
+                console.error('Error loading pastes:', e);
+                allPastes = [];
+            }
+        }
+        function updateUI() {
+            renderCategoryFilter();
+            applyFiltersAndSort();
+            renderManagerBar();
+            updateManagerUI();
+        }
+        // --- SEARCH ETC EVENT HANDLERS
+        searchInput.addEventListener('input', () => {
+            searchClearBtn.classList.toggle('active', searchInput.value.length > 0);
+            applyFiltersAndSort();
+        });
+        searchClearBtn.addEventListener('click', e => {
+            searchInput.value = '';
+            searchClearBtn.classList.remove('active');
+            applyFiltersAndSort();
+            searchInput.focus();
+        });
+        filterCategory.addEventListener('change', applyFiltersAndSort);
+        sortOption.addEventListener('change', applyFiltersAndSort);
+
+        searchInput.addEventListener('keydown', e => {
+            if (e.key === 'Escape') {
+                searchInput.value = '';
+                searchClearBtn.classList.remove('active');
+                applyFiltersAndSort();
+            }
+        });
+
+        // Support keyboard shortcut "/": Focus search
+        document.addEventListener('keydown', function(e){
+            if (e.key === '/' && document.activeElement !== searchInput &&
+                (!managerPopup.classList.contains('active'))) {
+                e.preventDefault();
+                searchInput.focus();
+            }
+        });
+
+        // Main: Initial Load & UI setup
+        (async function() {
+            await loadPastes();
+            updateUI();
+            // Poll for updates every 5 seconds (simple alternative to WebSockets)
+            setInterval(async () => {
+                await loadPastes();
+                updateUI();
+            }, 5000);
+        })();
+
+        // --- PASTE PAGE PATCH (manager post marking) ---
+        // On paste.html, if "isManager", inject a checkbox near the form for "Manager Post"
+        // Patch paste form links so manager can make a manager post
+        function patchPasteLinks() {
+            function addManagerQuery(href) {
+                if(getManager()){
+                   // append ?manager=1 (or &manager=1)
+                   if(href.indexOf("?")!==-1) return href+"&manager=1";
+                   else return href+"?manager=1";
+                }
+                return href;
+            }
+            // Header paste button and main paste button
+            const headerPaste = document.getElementById('headerNavPaste');
+            const mainPaste = document.getElementById('mainNavPaste');
+            if(headerPaste) headerPaste.href = addManagerQuery("pages/paste.html");
+            if(mainPaste) mainPaste.href = addManagerQuery("pages/paste.html");
+        }
+        // Patch links once on load, and when manager logs in
+        patchPasteLinks();
+        window.addEventListener('storage', patchPasteLinks);
+        // When manager logs in/out
+        window.setManager = setManager;
+        window.patchPasteLinks = patchPasteLinks;
+
+        // Patch "paste.html" page to show "manager post" toggle -- only if navigated with ?manager=1 and session manager
+        // The following script is only run on "pages/paste.html"
+        // Inserted here for demonstration but to be replicated on that page for full UX
+    </script>
+</body>
+</html>

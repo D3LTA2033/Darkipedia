@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Loading - Darkipedia</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            background: #0a0a0a;
+            color: #00ff00;
+            font-family: 'Courier New', monospace;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            overflow: hidden;
+        }
+        .container {
+            text-align: center;
+            max-width: 500px;
+            padding: 2em;
+        }
+        h1 {
+            font-size: 2.5em;
+            margin-bottom: 1em;
+            text-shadow: 0 0 10px #00ff00;
+            letter-spacing: 0.1em;
+        }
+        .loader {
+            border: 3px solid #1a1a1a;
+            border-top: 3px solid #00ff00;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+            margin: 2em auto;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        .captcha-box {
+            margin-top: 2em;
+            padding: 2em;
+            border: 2px solid #00ff00;
+            background: #0f0f0f;
+            box-shadow: 0 0 20px #00ff0040;
+        }
+        .captcha-code {
+            font-size: 3em;
+            font-weight: bold;
+            color: #00ff00;
+            text-shadow: 0 0 10px #00ff00;
+            margin: 1em 0;
+            letter-spacing: 0.2em;
+            user-select: none;
+        }
+        .captcha-input {
+            background: #1a1a1a;
+            border: 2px solid #00ff00;
+            color: #00ff00;
+            font-size: 1.5em;
+            padding: 0.5em;
+            text-align: center;
+            font-family: 'Courier New', monospace;
+            width: 100%;
+            margin: 1em 0;
+            outline: none;
+        }
+        .captcha-input:focus {
+            box-shadow: 0 0 10px #00ff00;
+        }
+        .captcha-btn {
+            background: #00ff00;
+            color: #0a0a0a;
+            border: none;
+            padding: 0.7em 2em;
+            font-size: 1.2em;
+            font-family: 'Courier New', monospace;
+            cursor: pointer;
+            margin-top: 1em;
+            font-weight: bold;
+            transition: background 0.3s;
+        }
+        .captcha-btn:hover {
+            background: #00cc00;
+        }
+        .error {
+            color: #ff0000;
+            margin-top: 1em;
+            display: none;
+        }
+        .error.show {
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>DARKIPEDIA</h1>
+        <div class="loader" id="loader"></div>
+        <div class="captcha-box" id="captchaBox" style="display: none;">
+            <p>Anti-Bot Verification</p>
+            <p>Enter the code below:</p>
+            <div class="captcha-code" id="captchaCode">000000</div>
+            <input type="text" class="captcha-input" id="captchaInput" placeholder="Enter code" autocomplete="off" maxlength="6">
+            <button class="captcha-btn" id="captchaBtn">ENTER</button>
+            <div class="error" id="error">Incorrect code. Try again.</div>
+        </div>
+    </div>
+    <script>
+        let captchaCode = '';
+        let attempts = 0;
+        
+        function generateCaptcha() {
+            captchaCode = Math.floor(100000 + Math.random() * 900000).toString();
+            document.getElementById('captchaCode').textContent = captchaCode;
+        }
+        
+        function checkCaptcha() {
+            const input = document.getElementById('captchaInput').value;
+            const error = document.getElementById('error');
+            
+            if (input === captchaCode) {
+                // Store verification in sessionStorage
+                sessionStorage.setItem('captcha_verified', 'true');
+                sessionStorage.setItem('captcha_time', Date.now().toString());
+                // Redirect to main page
+                window.location.href = 'index.html';
+            } else {
+                attempts++;
+                error.classList.add('show');
+                document.getElementById('captchaInput').value = '';
+                generateCaptcha();
+                
+                if (attempts >= 5) {
+                    error.textContent = 'Too many attempts. Refreshing...';
+                    setTimeout(() => {
+                        location.reload();
+                    }, 2000);
+                }
+            }
+        }
+        
+        // Show captcha after loading
+        setTimeout(() => {
+            document.getElementById('loader').style.display = 'none';
+            document.getElementById('captchaBox').style.display = 'block';
+            generateCaptcha();
+            document.getElementById('captchaInput').focus();
+        }, 1500);
+        
+        document.getElementById('captchaBtn').addEventListener('click', checkCaptcha);
+        document.getElementById('captchaInput').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                checkCaptcha();
+            }
+        });
+        
+        // Check if already verified (within 1 hour)
+        const verified = sessionStorage.getItem('captcha_verified');
+        const verifyTime = sessionStorage.getItem('captcha_time');
+        if (verified === 'true' && verifyTime) {
+            const timeDiff = Date.now() - parseInt(verifyTime);
+            if (timeDiff < 3600000) { // 1 hour
+                window.location.href = 'index.html';
+            }
+        }
+    </script>
+</body>
+</html>
+
