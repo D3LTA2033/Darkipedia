@@ -11,35 +11,36 @@
             box-sizing: border-box;
         }
         body {
-            background: #000000;
-            color: #00ff00;
+            background: #0a0a0a;
+            color: #ffffff;
             font-family: 'Courier New', 'Monaco', monospace;
             font-size: 14px;
             line-height: 1.6;
             min-height: 100vh;
         }
         .header {
-            background: #0a0a0a;
-            border-bottom: 1px solid #00ff00;
+            background: #1a1a1a;
+            border-bottom: 2px solid #ff0000;
             padding: 10px 20px;
             display: flex;
             justify-content: space-between;
             align-items: center;
         }
         .header h1 {
-            color: #00ff00;
+            color: #ff0000;
             font-size: 24px;
-            text-shadow: 0 0 10px #00ff00;
+            text-shadow: 0 0 10px #ff0000;
             letter-spacing: 2px;
+            font-weight: bold;
         }
         .header-actions {
             display: flex;
             gap: 10px;
         }
         .btn {
-            background: #0a0a0a;
-            border: 1px solid #00ff00;
-            color: #00ff00;
+            background: #1a1a1a;
+            border: 1px solid #ff0000;
+            color: #ffffff;
             padding: 8px 15px;
             cursor: pointer;
             font-family: inherit;
@@ -49,12 +50,12 @@
             transition: all 0.3s;
         }
         .btn:hover {
-            background: #00ff00;
-            color: #000000;
-            box-shadow: 0 0 10px #00ff00;
+            background: #ff0000;
+            color: #ffffff;
+            box-shadow: 0 0 10px #ff0000;
         }
         .user-info {
-            color: #00ff00;
+            color: #ffffff;
             display: flex;
             align-items: center;
             gap: 10px;
@@ -92,16 +93,17 @@
         }
         .search-bar input {
             flex: 1;
-            background: #0a0a0a;
-            border: 1px solid #00ff00;
-            color: #00ff00;
+            background: #1a1a1a;
+            border: 1px solid #333333;
+            color: #ffffff;
             padding: 8px;
             font-family: inherit;
             font-size: 12px;
         }
         .search-bar input:focus {
             outline: none;
-            box-shadow: 0 0 5px #00ff00;
+            border-color: #ff0000;
+            box-shadow: 0 0 5px #ff0000;
         }
         .filters {
             margin-bottom: 20px;
@@ -110,19 +112,23 @@
             flex-wrap: wrap;
         }
         .filters select {
-            background: #0a0a0a;
-            border: 1px solid #00ff00;
-            color: #00ff00;
+            background: #1a1a1a;
+            border: 1px solid #333333;
+            color: #ffffff;
             padding: 5px;
             font-family: inherit;
             font-size: 12px;
         }
+        .filters select:focus {
+            outline: none;
+            border-color: #ff0000;
+        }
         .paste-list {
-            border: 1px solid #00ff00;
-            background: #0a0a0a;
+            border: 1px solid #333333;
+            background: #1a1a1a;
         }
         .paste-item {
-            border-bottom: 1px solid #003300;
+            border-bottom: 1px solid #2a2a2a;
             padding: 15px;
             display: flex;
             justify-content: space-between;
@@ -132,17 +138,17 @@
             border-bottom: none;
         }
         .paste-item:hover {
-            background: #001a00;
+            background: #252525;
         }
         .paste-item.pinned {
-            border-left: 3px solid #00ff00;
-            background: #001a00;
+            border-left: 3px solid #ff0000;
+            background: #252525;
         }
         .paste-left {
             flex: 1;
         }
         .paste-title {
-            color: #00ff00;
+            color: #ffffff;
             font-size: 16px;
             margin-bottom: 5px;
             display: flex;
@@ -150,25 +156,26 @@
             gap: 10px;
         }
         .paste-title a {
-            color: #00ff00;
+            color: #ff0000;
             text-decoration: none;
         }
         .paste-title a:hover {
+            color: #ff4444;
             text-decoration: underline;
         }
         .pin-icon {
-            color: #ffff00;
+            color: #ff0000;
             font-weight: bold;
         }
         .paste-meta {
-            color: #00aa00;
+            color: #aaaaaa;
             font-size: 11px;
             display: flex;
             gap: 15px;
             margin-top: 5px;
         }
         .paste-content-preview {
-            color: #00aa00;
+            color: #cccccc;
             font-size: 12px;
             margin-top: 8px;
             max-width: 600px;
@@ -200,39 +207,44 @@
             display: flex;
         }
         .modal-content {
-            background: #0a0a0a;
-            border: 2px solid #00ff00;
+            background: #1a1a1a;
+            border: 2px solid #ff0000;
             padding: 30px;
             max-width: 400px;
             width: 90%;
-            box-shadow: 0 0 20px #00ff00;
+            box-shadow: 0 0 20px #ff0000;
         }
         .modal-content h2 {
-            color: #00ff00;
+            color: #ff0000;
             margin-bottom: 20px;
             text-align: center;
+            font-weight: bold;
         }
         .form-group {
             margin-bottom: 15px;
         }
         .form-group label {
             display: block;
-            color: #00ff00;
+            color: #ffffff;
             margin-bottom: 5px;
             font-size: 12px;
         }
         .form-group input {
             width: 100%;
-            background: #000000;
-            border: 1px solid #00ff00;
-            color: #00ff00;
+            background: #0a0a0a;
+            border: 1px solid #333333;
+            color: #ffffff;
             padding: 8px;
             font-family: inherit;
             font-size: 12px;
         }
         .form-group input:focus {
             outline: none;
-            box-shadow: 0 0 5px #00ff00;
+            border-color: #ff0000;
+            box-shadow: 0 0 5px #ff0000;
+        }
+        .form-group input[type="password"] {
+            letter-spacing: 2px;
         }
         .error {
             color: #ff0000;
@@ -254,7 +266,28 @@
         .no-pastes {
             text-align: center;
             padding: 40px;
-            color: #00aa00;
+            color: #aaaaaa;
+        }
+        .fa-code-hint {
+            color: #666666;
+            font-size: 10px;
+            margin-top: 3px;
+            font-style: italic;
+        }
+        .fa-code-input {
+            background: #0a0a0a;
+            border: 1px solid #333333;
+            color: #ffffff;
+            padding: 8px;
+            font-family: inherit;
+            font-size: 12px;
+            letter-spacing: 3px;
+            text-align: center;
+        }
+        .fa-code-input:focus {
+            outline: none;
+            border-color: #ff0000;
+            box-shadow: 0 0 5px #ff0000;
         }
     </style>
 </head>
@@ -312,6 +345,11 @@
             <div class="form-group">
                 <label>Password</label>
                 <input type="password" id="loginPassword" autocomplete="current-password">
+            </div>
+            <div class="form-group" id="faCodeGroup" style="display: none;">
+                <label>2FA Code (for Founder/Staff/Manager)</label>
+                <input type="text" id="loginFACode" class="fa-code-input" placeholder="Enter code" maxlength="10" autocomplete="off">
+                <div class="fa-code-hint">Required for special roles</div>
             </div>
             <div class="error" id="loginError"></div>
             <div class="modal-actions">
@@ -381,14 +419,37 @@
         function showLoginModal() {
             document.getElementById('loginModal').classList.add('active');
             document.getElementById('loginUsername').focus();
+            document.getElementById('faCodeGroup').style.display = 'none';
+            document.getElementById('loginFACode').value = '';
         }
         function hideLoginModal() {
             document.getElementById('loginModal').classList.remove('active');
             document.getElementById('loginError').classList.remove('show');
+            document.getElementById('faCodeGroup').style.display = 'none';
         }
+        
+        // Check if user needs 2FA
+        document.getElementById('loginUsername').addEventListener('blur', async function() {
+            const username = this.value.trim();
+            if (username) {
+                try {
+                    const response = await fetch(`${API_BASE}/auth/check-2fa?username=${encodeURIComponent(username)}`);
+                    const data = await response.json();
+                    if (data.requires2FA) {
+                        document.getElementById('faCodeGroup').style.display = 'block';
+                    } else {
+                        document.getElementById('faCodeGroup').style.display = 'none';
+                    }
+                } catch (err) {
+                    // Ignore errors
+                }
+            }
+        });
+        
         async function login() {
             const username = document.getElementById('loginUsername').value;
             const password = document.getElementById('loginPassword').value;
+            const faCode = document.getElementById('loginFACode').value;
             const error = document.getElementById('loginError');
             
             if (!username || !password) {
@@ -401,7 +462,7 @@
                 const response = await fetch(`${API_BASE}/auth/login`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ username, password })
+                    body: JSON.stringify({ username, password, faCode: faCode || null })
                 });
                 
                 const data = await response.json();
@@ -415,6 +476,9 @@
                 } else {
                     error.textContent = data.error || 'Login failed';
                     error.classList.add('show');
+                    if (data.requires2FA) {
+                        document.getElementById('faCodeGroup').style.display = 'block';
+                    }
                 }
             } catch (err) {
                 error.textContent = 'Network error. Please try again.';
@@ -630,6 +694,16 @@
 
         // Enter key handlers
         document.getElementById('loginPassword').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                const faGroup = document.getElementById('faCodeGroup');
+                if (faGroup.style.display === 'block') {
+                    document.getElementById('loginFACode').focus();
+                } else {
+                    login();
+                }
+            }
+        });
+        document.getElementById('loginFACode').addEventListener('keypress', (e) => {
             if (e.key === 'Enter') login();
         });
         document.getElementById('signupPassword').addEventListener('keypress', (e) => {
